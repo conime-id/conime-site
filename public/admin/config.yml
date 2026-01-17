@@ -19,6 +19,12 @@ collections:
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Featured Image", name: "thumbnail", widget: "image"}
       - {label: "Category", name: "category", widget: "select", options: ["Anime", "Film", "Game", "Komik"]}
+      
+      # Fields khusus untuk kebutuhan layout CoNime
+      - {label: "Source Name", name: "source_name", widget: "string", required: false, hint: "Contoh: YouTube, Natalie.mu"}
+      - {label: "Source URL", name: "source_url", widget: "string", required: false}
+      - {label: "Gallery Images", name: "gallery", widget: "list", required: false, field: {label: "Image", name: "image", widget: "image"}}
+      
       - {label: "Body (ID)", name: "body_id", widget: "markdown"}
       - {label: "Body (EN)", name: "body_en", widget: "markdown"}
     
