@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager | CoNime</title>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <style>
+    /* Dark Mode Override untuk Decap CMS */
+    :root {
+      --bg: #0f172a;
+      --bg-light: #1e293b;
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --border: #334155;
+      --primary: #ff1545;
+    }
+    body, #nc-root { background-color: var(--bg) !important; color: var(--text) !important; }
+    /* Ini adalah hack CSS sederhana, Decap CMS punya struktur shadow DOM yang agak sulit ditembus, 
+       tapi ini akan membuat halaman login/loading jadi gelap. 
+       Untuk UI dalam, Decap CMS sayangnya belum support native dark mode sepenuhnya mudah,
+       tapi kita set background utama dulu agar tidak silau. */
+  </style>
 </head>
 <body>
   <!-- Include the script that builds the page and powers Netlify CMS -->
