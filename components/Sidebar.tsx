@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { ArrowRight, History, Flame, Tags, Instagram, Twitter, Facebook, Youtube, Share2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { SOCIAL_LINKS, TRANSLATIONS, getCategoryColor, MOCK_NEWS, CATEGORIES, TIKTOK_ICON_SVG } from '../constants';
+import { SOCIAL_LINKS, TRANSLATIONS, getCategoryColor, CATEGORIES, TIKTOK_ICON_SVG } from '../constants';
+import { NewsItem } from '../types';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
 
@@ -10,6 +11,7 @@ interface SidebarProps {
   onArticleClick?: (id: string) => void;
   onCategoryClick?: (category: string) => void;
   history?: any[]; // optional, can read from localstorage if needed, but passed prop is fine
+  articles: NewsItem[];
 }
 
 const SidebarSection: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
@@ -24,28 +26,28 @@ const SidebarSection: React.FC<{ title: string; icon: React.ReactNode; children:
   </section>
 );
 
-const Sidebar: React.FC<SidebarProps> = ({ language, onArticleClick, onCategoryClick, history }) => {
+const Sidebar: React.FC<SidebarProps> = ({ language, onArticleClick, onCategoryClick, history, articles }) => {
   const t = TRANSLATIONS[language];
   const navigate = useNavigate();
 
   const sortedTrending = useMemo(() => {
-    return [...MOCK_NEWS].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4);
-  }, []);
+    return [...articles].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4);
+  }, [articles]);
 
   const recentlyRead = useMemo(() => {
     // Rely on passed history prop if available for reactivity, otherwise fallback to localStorage
     const historyData = history || JSON.parse(localStorage.getItem('conime_history') || '[]');
     const historyIds = historyData.map((item: any) => typeof item === 'string' ? item : item.id);
-    return MOCK_NEWS.filter(item => historyIds.includes(item.id))
+    return articles.filter(item => historyIds.includes(item.id))
       .sort((a, b) => historyIds.indexOf(a.id) - historyIds.indexOf(b.id))
       .slice(0, 5);
-  }, [history]);
+  }, [history, articles]);
 
   const categoriesWithCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     const mainTopics = ['ANIME', 'COMICS', 'COMIC', 'GAME', 'GAMES', 'FILM', 'MOVIE', 'MOVIES', 'OPINION', 'OPINI', 'REVIEWS', 'ULASAN'];
 
-    MOCK_NEWS.forEach(item => {
+    articles.forEach(item => {
       const catEn = getLocalized(item.category, 'en').toUpperCase();
       const subCatEn = getLocalized(item.subCategory, 'en').toUpperCase();
       const uniqueTopicsInArticle = new Set([catEn, subCatEn]);
@@ -69,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ language, onArticleClick, onCategoryC
       
       return { ...cat, count };
     });
-  }, []);
+  }, [articles]);
 
   // Centralized Link Mapping using getSectionLink utility
   const getCategoryLink = (catNameEn: string) => {

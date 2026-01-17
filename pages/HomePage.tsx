@@ -5,7 +5,8 @@ import Hero from "../components/Hero";
 import NewsCard from "../components/NewsCard";
 import Sidebar from "../components/Sidebar";
 import TrendingSection from "../components/TrendingSection";
-import { MOCK_NEWS, TRANSLATIONS } from "../constants";
+import { TRANSLATIONS } from "../constants";
+import { NewsItem } from "../types";
 import { getLocalized } from "../utils/localization";
 import { getArticleLink, getSectionLink } from "../utils/navigation";
 import { 
@@ -35,6 +36,8 @@ interface HomePageProps {
   toggleBookmark: (id: string) => void;
   viewCounts: {[key: string]: number};
   onSaveSearch?: (query: string) => void;
+  articles: NewsItem[];
+  isLoadingContent?: boolean;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({ 
@@ -46,7 +49,9 @@ export const HomePage: React.FC<HomePageProps> = ({
   bookmarks, 
   toggleBookmark,
   viewCounts,
-  onSaveSearch
+  onSaveSearch,
+  articles,
+  isLoadingContent
 }) => {
   const navigate = useNavigate();
   const { category: urlCategoryFromParams, tag: urlTagFromParams } = useParams(); // /category/:category (Legacy) & /topic/:tag
@@ -96,7 +101,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // 1. Data Source
   const allFilteredNews = useMemo(() => {
-    let news = MOCK_NEWS.map(item => ({
+    let news = articles.map(item => ({
       ...item,
       views: item.views + (viewCounts[item.id] || 0)
     }));
@@ -224,7 +229,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   };
 
   const handleArticleClick = (id: string) => {
-    const article = MOCK_NEWS.find(n => n.id === id);
+    const article = articles.find(n => n.id === id);
     if (!article) {
         navigate(`/news/${id}`); // Fallback
         return;
@@ -312,6 +317,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {isHome && (
         <Hero
           language={language}
+          articles={articles}
           onArticleClick={handleArticleClick}
           onCategoryClick={handleCategoryNavigation}
         />
@@ -567,6 +573,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="lg:w-1/4">
           <Sidebar
             language={language}
+            articles={articles}
             onArticleClick={handleArticleClick}
             onCategoryClick={handleCategoryNavigation}
             history={history}
@@ -577,6 +584,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {isHome && (
         <TrendingSection
             language={language}
+            articles={articles}
             onArticleClick={handleArticleClick}
             onCategoryClick={handleCategoryNavigation}
         />

@@ -1,20 +1,22 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { MOCK_NEWS, TRANSLATIONS, getCategoryColor } from '../constants';
+import { TRANSLATIONS, getCategoryColor } from '../constants';
 import { getLocalized } from '../utils/localization';
+import { NewsItem } from '../types';
 
 interface HeroProps {
   language: 'id' | 'en';
   onArticleClick: (id: string) => void;
   onCategoryClick: (category: string) => void;
+  articles: NewsItem[];
 }
 
-const Hero: React.FC<HeroProps> = ({ language, onArticleClick, onCategoryClick }) => {
+const Hero: React.FC<HeroProps> = ({ language, onArticleClick, onCategoryClick, articles }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   
   // Use first 5 items as featured slides
-  const featuredSlides = MOCK_NEWS.slice(0, 5);
+  const featuredSlides = articles.slice(0, 5);
   const t = TRANSLATIONS[language];
 
   const nextSlide = useCallback(() => {

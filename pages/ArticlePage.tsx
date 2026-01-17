@@ -3,7 +3,7 @@ import React, { useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ArticleDetail from '../components/ArticleDetail';
 import { NotFound } from './NotFound';
-import { MOCK_NEWS } from '../constants';
+import { NewsItem } from '../types';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
 import { updateMetaTags } from '../utils/seo';
@@ -17,6 +17,7 @@ interface ArticlePageProps {
   currentUser: any;
   onLoginClick: () => void;
   addHistory: (id: string) => void;
+  articles: NewsItem[];
 }
 
 export const ArticlePage: React.FC<ArticlePageProps> = ({
@@ -26,7 +27,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   toggleBookmark,
   currentUser,
   onLoginClick,
-  addHistory
+  addHistory,
+  articles
 }) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     };
   }, []);
 
-  const article = useMemo(() => MOCK_NEWS.find(n => n.id === id), [id]);
+  const article = useMemo(() => articles.find(n => n.id === id), [id, articles]);
 
   // Update Reading History and Document Title
   useEffect(() => {
@@ -74,7 +76,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       onBack={() => navigate(-1)}
       onArticleClick={(newId) => {
         // Find article to determine correct path (News vs Opinion vs Review)
-        const targetArticle = MOCK_NEWS.find(n => n.id === newId);
+        const targetArticle = articles.find(n => n.id === newId);
         if (targetArticle) {
            navigate(getArticleLink(targetArticle));
         } else {

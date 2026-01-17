@@ -82,6 +82,7 @@ Anime ini merupakan adaptasi dari manga karya **Aka Akasaka** dan **Mengo Yokoya
 **Oshi no Ko Season 3** dijadwalkan tayang pada **Januari 2026** sebagai bagian dari **musim Winter 2026**. Informasi lebih lanjut mengenai tanggal tayang pasti dan jumlah episode akan diumumkan di kemudian hari.
 
 ---
+
 ## Oshi no Ko Season 3 Confirmed for January 2026
 
 The anime **Oshi no Ko** has officially confirmed its **third season**, scheduled to premiere in **January 2026**. The announcement was made via the series’ official website and social media accounts, reaffirming the continuation of the anime adaptation of the manga by **Aka Akasaka** and **Mengo Yokoyari**.

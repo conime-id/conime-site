@@ -6,7 +6,7 @@ import {
   Play, Youtube, ZoomIn, ZoomOut, RotateCcw, Move, Check 
 } from 'lucide-react';
 import { NewsItem } from '../types';
-import { TRANSLATIONS, getCategoryColor, MOCK_NEWS } from '../constants';
+import { TRANSLATIONS, getCategoryColor } from '../constants';
 import Sidebar from './Sidebar';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
@@ -26,6 +26,7 @@ interface ArticleDetailProps {
   onToggleBookmark: () => void;
   currentUser: any;
   onLoginClick: () => void;
+  articles: NewsItem[];
 }
 
 const ArticleDetail: React.FC<ArticleDetailProps> = ({ 
@@ -39,7 +40,8 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
   isBookmarked,
   onToggleBookmark,
   currentUser,
-  onLoginClick
+  onLoginClick,
+  articles
 }) => {
   const navigate = useNavigate();
   const t = (TRANSLATIONS[language] as any);
@@ -188,7 +190,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
   }, [lightboxIndex]);
 
   const { inlineRec1, inlineRec2, gridRelated } = useMemo(() => {
-    const otherNews = MOCK_NEWS.filter(item => item.id !== article.id);
+    const otherNews = articles.filter(item => item.id !== article.id);
     const catEn = article.category?.en || (typeof article.category === 'string' ? article.category : '');
     const subCatEn = article.subCategory?.en || (typeof article.subCategory === 'string' ? article.subCategory : '');
     
@@ -780,6 +782,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
           onArticleClick={onArticleClick} 
           onCategoryClick={onCategoryClick} 
           history={history}
+          articles={articles}
         />
       </div>
 

@@ -1,18 +1,21 @@
 
 import React from 'react';
-import { MOCK_NEWS, TRANSLATIONS, getCategoryColor } from '../constants';
+import { TRANSLATIONS, getCategoryColor } from '../constants';
 import { getLocalized } from '../utils/localization';
+import { NewsItem } from '../types';
 
 interface TrendingSectionProps {
   language: 'id' | 'en';
   onArticleClick: (id: string) => void;
   onCategoryClick: (category: string) => void;
+  articles: NewsItem[];
 }
 
-const TrendingSection: React.FC<TrendingSectionProps> = ({ language, onArticleClick, onCategoryClick }) => {
+const TrendingSection: React.FC<TrendingSectionProps> = ({ language, onArticleClick, onCategoryClick, articles }) => {
   const t = TRANSLATIONS[language];
   
-  const popularArticles = MOCK_NEWS.slice(1, 5).map(item => ({
+  // Sort by views if possible, or just slice
+  const popularArticles = [...articles].sort((a,b) => (b.views||0) - (a.views||0)).slice(0, 4).map(item => ({
     id: item.id,
     title: getLocalized(item.title, language),
     image: item.imageUrl,

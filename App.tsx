@@ -12,6 +12,8 @@ import { HomePage } from "./pages/HomePage";
 import { ArticlePage } from "./pages/ArticlePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { NotFound } from "./pages/NotFound";
+import { getAllArticles } from "./utils/contentLoader";
+import { NewsItem } from "./types";
 
 // Static Components (Wrapped for Routes)
 import AboutUs from "./components/AboutUs";
@@ -79,6 +81,24 @@ const App: React.FC = () => {
     return null;
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // --- Dynamic Content State ---
+  const [articles, setArticles] = useState<NewsItem[]>([]);
+  const [isContentLoading, setIsContentLoading] = useState(true);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const data = await getAllArticles();
+        setArticles(data);
+      } catch (error) {
+        console.error("Failed to load CMS content:", error);
+      } finally {
+        setIsContentLoading(false);
+      }
+    };
+    loadContent();
+  }, []);
 
   // Sync Effects
   useEffect(() => {
@@ -254,6 +274,7 @@ const App: React.FC = () => {
             <Route path="/news/:subCategory/:id" element={<ArticlePage 
                 language={language}
                 section="news"
+                articles={articles}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -265,6 +286,7 @@ const App: React.FC = () => {
             <Route path="/news/:id" element={<ArticlePage 
                 language={language}
                 section="news"
+                articles={articles}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -276,6 +298,7 @@ const App: React.FC = () => {
             <Route path="/opinion/:id" element={<ArticlePage 
                 language={language}
                 section="opinion"
+                articles={articles}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -287,6 +310,7 @@ const App: React.FC = () => {
             <Route path="/reviews/:id" element={<ArticlePage 
                 language={language}
                 section="reviews"
+                articles={articles}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -300,6 +324,8 @@ const App: React.FC = () => {
                 key="home-root"
                 language={language}
                 theme={theme}
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 activeNav="home"
                 history={history}
                 bookmarks={bookmarks}
@@ -313,6 +339,8 @@ const App: React.FC = () => {
                 language={language}
                 theme={theme}
                 section="news"
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -326,6 +354,8 @@ const App: React.FC = () => {
                 theme={theme}
                 section="news"
                 subCategory="anime"
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -339,6 +369,8 @@ const App: React.FC = () => {
                 theme={theme}
                 section="news"
                 subCategory="comics"
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -352,6 +384,8 @@ const App: React.FC = () => {
                 theme={theme}
                 section="news"
                 subCategory="movies"
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -365,6 +399,8 @@ const App: React.FC = () => {
                 theme={theme}
                 section="news"
                 subCategory="games"
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -377,6 +413,8 @@ const App: React.FC = () => {
                 language={language}
                 theme={theme}
                 section="opinion"
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -389,6 +427,8 @@ const App: React.FC = () => {
                 language={language}
                 theme={theme}
                 section="reviews"
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -409,6 +449,8 @@ const App: React.FC = () => {
                 key={`home-category-${location.pathname}`}
                 language={language}
                 theme={theme}
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
@@ -421,6 +463,8 @@ const App: React.FC = () => {
                 language={language}
                 theme={theme}
                 activeNav="topic" 
+                articles={articles}
+                isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
