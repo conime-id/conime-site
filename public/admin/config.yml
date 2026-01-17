@@ -25,8 +25,9 @@ collections:
       - {label: "Title (ID)", name: "title_id", widget: "string"}
       - {label: "Title (EN)", name: "title_en", widget: "string", required: false}
       
-      # --- SEO & SUMMARY ---
-      - {label: "Excerpt / SEO Description", name: "excerpt", widget: "text", hint: "Ringkasan pendek artikel untuk Meta Description SEO."}
+      # --- SEO & SUMMARY (BILINGUAL) ---
+      - {label: "Excerpt (ID) / SEO ID", name: "excerpt_id", widget: "text", hint: "Ringkasan pendek Bahasa Indonesia untuk SEO."}
+      - {label: "Excerpt (EN) / SEO EN", name: "excerpt_en", widget: "text", required: false, hint: "English summary for SEO."}
 
       # --- PENULIS & WAKTU ---
       - {label: "Author", name: "author", widget: "string", default: "CoNime Editorial"}
@@ -34,16 +35,19 @@ collections:
       
       # --- KATEGORI & TOPIK ---
       - {label: "Category", name: "category", widget: "select", options: ["Anime", "Film", "Game", "Komik"]}
-      - {label: "Topics", name: "topics", widget: "list", required: false, hint: "Tag topik (contoh: One Piece, Isekai, Action)"}
+      - {label: "Topics", name: "topics", widget: "list", required: false, hint: "Tag topik (contoh: One Piece, Isekai)"}
 
       # --- MEDIA UTAMA (THUMBNAIL) ---
       - {label: "Featured Image", name: "thumbnail", widget: "image"}
-      - {label: "Image Credit/Source", name: "image_credit", widget: "string", required: false, hint: "Contoh: TMS Entertainment / Shueisha"}
+      - {label: "Image Title/Alt Text", name: "image_title", widget: "string", required: false, hint: "Judul gambar (muncul saat hover)"}
+      - {label: "Image Credit/Source", name: "image_credit", widget: "string", required: false, hint: "Nama Pemilik Foto (Misal: Netflix)"}
+      - {label: "Image Source URL", name: "image_source_url", widget: "string", required: false, hint: "Link ke sumber foto (Misal: https://netflix.com)"}
       
       # --- VIDEO SISIPAN (Hanya Link) ---
       - {label: "Video Link", name: "video_url", widget: "string", required: false, hint: "Link YouTube/MP4"}
       - {label: "Video Title", name: "video_title", widget: "string", required: false}
-      - {label: "Video Source", name: "video_source", widget: "string", required: false, hint: "Contoh: Channel YouTube Kadokawa"}
+      - {label: "Video Source Name", name: "video_source", widget: "string", required: false, hint: "Nama Channel/Sumber"}
+      - {label: "Video Source URL", name: "video_source_url", widget: "string", required: false}
 
       # --- GALERI (FOTO & VIDEO) ---
       - label: "Gallery"
@@ -57,18 +61,20 @@ collections:
             fields:
               - {label: "Image", name: "image", widget: "image"}
               - {label: "Title/Caption", name: "title", widget: "string"}
-              - {label: "Source", name: "source", widget: "string"}
+              - {label: "Source Name", name: "source", widget: "string"}
+              - {label: "Source URL", name: "source_url", widget: "string", required: false}
           - label: "Video"
             name: "video"
             widget: "object"
             fields:
               - {label: "Video URL", name: "url", widget: "string"}
               - {label: "Title", name: "title", widget: "string"}
-              - {label: "Source", name: "source", widget: "string"}
+              - {label: "Source Name", name: "source", widget: "string"}
+              - {label: "Source URL", name: "source_url", widget: "string", required: false}
 
       # --- SUMBER ARTIKEL ---
-      - {label: "Article Source Name", name: "source_name", widget: "string", required: false, hint: "Contoh: Natalie.mu"}
-      - {label: "Article Source URL", name: "source_url", widget: "string", required: false}
+      - {label: "Article Source Name", name: "source_name", widget: "string", required: false, hint: "Teks Link (Contoh: Website Resmi One Piece)"}
+      - {label: "Article Source URL", name: "source_url", widget: "string", required: false, hint: "Link Tujuan (Contoh: https://one-piece.com)"}
 
       # --- ISI ARTIKEL ---
       # Body ditaruh paling bawah agar enak nulisnya setelah isi metadata
