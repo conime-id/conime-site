@@ -177,7 +177,14 @@ export const HomePage: React.FC<HomePageProps> = ({
             if (!isLabeledBerita) return false;
 
             const target = subCategory.toUpperCase();
-            return itemSubCatEn === target || itemCatEn === target; 
+            // Robust match: Exact, Plural, or Category field fallback
+            const subMatch = itemSubCatEn === target || 
+                            itemSubCatEn === target + 'S' || 
+                            itemSubCatEn === target.replace(/S$/, '') ||
+                            (target === 'COMICS' && itemSubCatEn === 'COMIC') ||
+                            (target === 'GAME' && itemSubCatEn === 'GAMES');
+
+            return subMatch || itemCatEn === target; 
         }
 
         // Just /news -> Show all News items (already excluded Opinion/Review)
@@ -214,7 +221,7 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
 
     return news;
-  }, [section, subCategory, urlCategory, urlTag, searchQuery, selectedTag, activeFilter, showBookmarks, bookmarks, viewCounts]);
+  }, [articles, section, subCategory, urlCategory, urlTag, searchQuery, selectedTag, activeFilter, showBookmarks, bookmarks, viewCounts]);
 
   const visibleNews = useMemo(() => {
     return allFilteredNews.slice(0, visibleCount);

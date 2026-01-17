@@ -31,7 +31,7 @@ const Hero: React.FC<HeroProps> = ({ language, onArticleClick, onCategoryClick, 
 
   return (
     <section 
-      className="relative h-[450px] md:h-[600px] rounded-[40px] overflow-hidden shadow-2xl border border-cogray-200 dark:border-cogray-900 bg-white dark:bg-cogray-950 group transition-colors duration-500"
+      className="relative h-[450px] md:h-[600px] rounded-[48px] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-cogray-100 dark:border-cogray-900 bg-cogray-950 group transition-all duration-500"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -59,8 +59,9 @@ const Hero: React.FC<HeroProps> = ({ language, onArticleClick, onCategoryClick, 
               src={slide.imageUrl}
             />
             
-            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent dark:from-cogray-950 dark:via-cogray-950/40 dark:to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-transparent dark:from-cogray-950/60 dark:via-transparent dark:to-transparent"></div>
+            {/* Premium Multi-layer Gradient for Readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
             
             <div className="absolute bottom-0 left-0 p-8 md:p-16 max-w-4xl text-left">
               <div className={`flex gap-3 mb-8 transition-all duration-1000 delay-300 ${
@@ -86,7 +87,7 @@ const Hero: React.FC<HeroProps> = ({ language, onArticleClick, onCategoryClick, 
                 </button>
               </div>
               
-              <h1 className={`text-3xl md:text-6xl font-black text-cogray-900 dark:text-white mb-8 leading-[1.05] drop-shadow-sm dark:drop-shadow-2xl uppercase tracking-tighter transition-all duration-1000 delay-500 ${
+              <h1 className={`text-3xl md:text-6xl font-black text-white mb-8 leading-[1] drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] uppercase tracking-tighter transition-all duration-1000 delay-500 ${
                 index === currentSlide ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-8 opacity-0 blur-sm'
               }`}>
                 {getLocalized(slide.title, language)}
@@ -99,8 +100,8 @@ const Hero: React.FC<HeroProps> = ({ language, onArticleClick, onCategoryClick, 
                   <div className="min-w-10 min-h-10 w-10 h-10 rounded-2xl bg-conime-500 border border-white/20 flex items-center justify-center text-sm font-black shadow-lg text-white">
                     {slide.author.charAt(0)}
                   </div>
-                  <span className="text-cogray-900 dark:text-white">
-                    {t.writtenBy} <span className="text-conime-500">{slide.author}</span>
+                  <span className="text-white">
+                    {t.writtenBy} <span className="text-conime-500 font-black">{slide.author}</span>
                   </span>
                 </div>
                 <span className="text-cogray-400 dark:text-cogray-500">|</span>

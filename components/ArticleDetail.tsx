@@ -10,6 +10,7 @@ import { TRANSLATIONS, getCategoryColor } from '../constants';
 import Sidebar from './Sidebar';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
+import { CATEGORIES } from '../constants'; // Added for category mapping
 import { updateMetaTags, injectJSONLD, generateArticleSchema } from '../utils/seo';
 import CommentsSection from './CommentsSection';
 import ShareModal from './ShareModal';
@@ -48,7 +49,28 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
   const categoryEn = article.category?.en || (typeof article.category === 'string' ? article.category : '');
   const categoryColor = getCategoryColor(categoryEn);
   const articleContentRef = useRef<HTMLDivElement>(null);
-  
+
+  // YouTube URL Converter to fix "Refused to connect"
+  const getEmbedUrl = (url: string) => {
+    if (!url) return '';
+    if (url.includes('youtube.com/embed/')) return url;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
+  };
+
+  // Basic Markdown Helper for inline styles
+  const renderMarkdown = (text: string) => {
+    if (!text) return '';
+    return text
+      // Bold: **text**
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Links: [text](url)
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-conime-600 hover:underline" target="_blank">$1</a>')
+      // Lists: - item
+      .replace(/^- (.*)$/gm, '<li>$1</li>');
+  };
+
   // States for interaction
   const [isLiked, setIsLiked] = useState(false);
   // Removed local isBookmarked state in favor of props
@@ -190,6 +212,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
   }, [lightboxIndex]);
 
   const { inlineRec1, inlineRec2, gridRelated } = useMemo(() => {
+    if (!articles) return { inlineRec1: undefined, inlineRec2: undefined, gridRelated: [] };
     const otherNews = articles.filter(item => item.id !== article.id);
     const catEn = article.category?.en || (typeof article.category === 'string' ? article.category : '');
     const subCatEn = article.subCategory?.en || (typeof article.subCategory === 'string' ? article.subCategory : '');
@@ -211,11 +234,12 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
       inlineRec2: allCandidates[1],
       gridRelated: allCandidates.slice(2, 5)
     };
-  }, [article.id, article.category?.en, article.subCategory?.en]);
+  }, [articles, article.id, article.category?.en, article.subCategory?.en]);
 
   const paragraphs = useMemo(() => {
     const contentText = getLocalized(article.content, language);
-    return contentText.split('\n\n');
+    // Split by double newline OR newline followed by a header (#)
+    return contentText.split(/\r?\n\s*\r?\n|\r?\n(?=#)/).filter(p => p.trim());
   }, [article.content, language]);
 
   const point1 = Math.max(1, Math.floor(paragraphs.length / 3));
@@ -351,14 +375,14 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => setShowShareModal(true)}
-                  className="p-3 bg-cogray-50 dark:bg-cogray-900 text-cogray-400 hover:text-white hover:bg-cogray-900 dark:hover:bg-conime-600 rounded-2xl transition-all border border-cogray-100 dark:border-cogray-800 shadow-sm" 
+                  className="p-3 bg-cogray-50 dark:bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white hover:bg-cogray-900 dark:hover:bg-conime-600 rounded-2xl transition-all border border-cogray-100 dark:border-cogray-800 shadow-sm" 
                   title="Share Article"
                 >
                   <Share2 className="w-5 h-5" />
                 </button>
                 <button 
                    onClick={onToggleBookmark}
-                   className={`p-3 rounded-2xl transition-all border shadow-sm ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-50 dark:bg-cogray-900 text-cogray-400 hover:text-white hover:bg-cogray-900 dark:hover:bg-conime-600 border-cogray-100 dark:border-cogray-800'}`}
+                   className={`p-3 rounded-2xl transition-all border shadow-sm ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-50 dark:bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white hover:bg-cogray-900 dark:hover:bg-conime-600 border-cogray-100 dark:border-cogray-800'}`}
                    title="Bookmark Article"
                 >
                   <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -367,78 +391,104 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
             </div>
           </div>
 
-          <div className="mb-16 space-y-12">
-            <div className="relative rounded-[40px] overflow-hidden border border-cogray-100 dark:border-cogray-900 shadow-2xl">
-              <img 
-                src={article.imageUrl} 
-                alt={getLocalized(article.title, language)} 
-                className="w-full h-full object-cover max-h-[850px] min-h-[450px]" 
-              />
-            </div>
-            
-            {article.videoUrl && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 px-2">
-                   <div className="w-8 h-8 bg-red-600/10 rounded-xl flex items-center justify-center text-red-600">
-                      <Youtube className="w-5 h-5" />
-                   </div>
-                   <span className="text-xs font-black text-cogray-900 dark:text-white uppercase tracking-[0.2em]">
-                     {article.videoLabel ? getLocalized(article.videoLabel, language) : t.defaultVideoLabel}
-                   </span>
+              <div className="mb-16 space-y-6">
+                <div className="relative rounded-[40px] overflow-hidden border border-cogray-100 dark:border-cogray-900 shadow-2xl">
+                  <img 
+                    src={article.imageUrl} 
+                    alt={getLocalized(article.title, language)} 
+                    className="w-full h-full object-cover max-h-[850px] min-h-[450px]" 
+                  />
                 </div>
-                <div className="relative rounded-[40px] overflow-hidden aspect-video border border-cogray-100 dark:border-cogray-900 shadow-2xl bg-black group/video max-w-5xl mx-auto">
-                  <iframe 
-                    src={`${article.videoUrl}?rel=0&modestbranding=1`} 
-                    className="absolute inset-0 w-full h-full" 
-                    allowFullScreen 
-                    title="YouTube video player" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  ></iframe>
+                
+                {/* Main Image Info - Directly Under Photo */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
+                  {article.imageCaption && (
+                    <div className="flex items-start md:items-center gap-2 max-w-2xl">
+                       <div className="w-1.5 h-1.5 rounded-full bg-conime-600 shrink-0 mt-1.5"></div>
+                       <p className="text-[10px] md:text-xs font-bold text-cogray-500 dark:text-cogray-400 uppercase tracking-widest leading-relaxed">{getLocalized(article.imageCaption, language)}</p>
+                    </div>
+                  )}
+                  {article.imageSource && (
+                    <div className="flex items-center gap-2 bg-cogray-50 dark:bg-cogray-900 px-3 py-1.5 rounded-xl border border-cogray-100 dark:border-cogray-800 shrink-0 self-start md:self-auto">
+                      <Camera className="w-3 h-3 text-conime-600" />
+                      <span className="text-[9px] font-black text-cogray-400 dark:text-cogray-600 uppercase tracking-tighter">
+                        {t.imageSourceLabel}: <a href={article.imageSourceUrl || "#"} target="_blank" rel="noopener noreferrer" className="hover:text-conime-600 transition-colors">{article.imageSource}</a>
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
 
-            <div className="mt-6 flex flex-col md:flex-row md:items-center justify-between gap-2 px-6">
-              {article.imageCaption && (
-                <div className="flex items-start md:items-center gap-2 max-w-2xl">
-                   <div className="w-1.5 h-1.5 rounded-full bg-conime-600 shrink-0 mt-1 md:mt-0"></div>
-                   <p className="text-[10px] md:text-xs font-bold text-cogray-500 dark:text-cogray-400 uppercase tracking-widest leading-relaxed">{getLocalized(article.imageCaption, language)}</p>
-                </div>
-              )}
-              {article.imageSource && (
-                <div className="flex items-center gap-2 bg-cogray-50 dark:bg-cogray-900 px-3 py-1.5 rounded-xl border border-cogray-100 dark:border-cogray-800 shrink-0">
-                  <Camera className="w-3 h-3 text-conime-600" />
-                  <span className="text-[9px] font-black text-cogray-400 dark:text-cogray-600 uppercase tracking-tighter">
-                    {t.imageSourceLabel}: <a href={article.imageSourceUrl || "#"} target="_blank" rel="noopener noreferrer" className="source-link">{article.imageSource}</a>
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+                {article.videoUrl && (
+                  <div className="mt-12 space-y-6 pt-12 border-t border-cogray-100 dark:border-cogray-900">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-red-600/10 rounded-xl flex items-center justify-center text-red-600">
+                            <Youtube className="w-5 h-5" />
+                        </div>
+                        <span className="text-xs font-black text-cogray-900 dark:text-white uppercase tracking-[0.2em]">
+                          {article.videoLabel ? getLocalized(article.videoLabel, language) : t.defaultVideoLabel}
+                        </span>
+                      </div>
+                      {article.videoSource && (
+                        <div className="flex items-center gap-2 bg-cogray-50 dark:bg-cogray-900 px-3 py-1.5 rounded-xl border border-cogray-100 dark:border-cogray-800 self-start md:self-auto">
+                          <span className="text-[9px] font-black text-cogray-400 dark:text-cogray-600 uppercase tracking-tighter">
+                            {t.videoSourceLabel}: <a href={article.videoSourceUrl || "#"} target="_blank" rel="noopener noreferrer" className="hover:text-conime-600 transition-colors">{article.videoSource}</a>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="relative rounded-[40px] overflow-hidden aspect-video border border-cogray-100 dark:border-cogray-900 shadow-2xl bg-black max-w-5xl">
+                      <iframe 
+                        src={`${getEmbedUrl(article.videoUrl)}?rel=0&modestbranding=1`} 
+                        className="absolute inset-0 w-full h-full" 
+                        allowFullScreen 
+                        title="YouTube video player" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
+              </div>
 
           <div className="article-content max-w-none text-left" ref={articleContentRef}>
-            <div className="text-cogray-800 dark:text-cogray-300 leading-[1.8] space-y-8 font-medium">
-              {paragraphs.map((paragraph, i) => {
-                const isBlockquote = paragraph.trim().startsWith('>');
-                return (
-                  <React.Fragment key={i}>
-                    {isBlockquote ? (
-                      <blockquote 
-                        className="text-xl md:text-2xl"
-                        dangerouslySetInnerHTML={{ __html: paragraph.trim().substring(1).trim() }}
-                      />
-                    ) : (
-                      <p 
-                        className="text-lg md:text-xl"
-                        dangerouslySetInnerHTML={{ __html: paragraph }}
-                      />
-                    )}
-                    {i === point1 && inlineRec1 && <RelatedInline item={inlineRec1} title={t.readAlso} />}
-                    {i === point2 && inlineRec2 && <RelatedInline item={inlineRec2} title={t.readAlso} />}
-                  </React.Fragment>
-                );
-              })}
-            </div>
+                <div className="text-cogray-800 dark:text-cogray-300 leading-[1.8] space-y-8 font-medium">
+                  {paragraphs.map((paragraph, i) => {
+                    const trimmed = paragraph.trim();
+                    if (!trimmed) return null;
+
+                    // Improved Markdown-like Handling
+                    if (trimmed.startsWith('## ')) {
+                      return <h2 key={i} className="text-2xl md:text-3xl font-black text-cogray-900 dark:text-white uppercase tracking-tight mt-12 mb-6">{trimmed.replace('## ', '')}</h2>;
+                    }
+                    if (trimmed.startsWith('### ')) {
+                      return <h3 key={i} className="text-xl md:text-2xl font-black text-cogray-900 dark:text-white uppercase tracking-tight mt-10 mb-4">{trimmed.replace('### ', '')}</h3>;
+                    }
+                    if (trimmed.startsWith('> ')) {
+                      return <blockquote key={i} className="text-xl md:text-2xl border-l-4 border-conime-600 pl-6 italic my-8 text-cogray-500">{trimmed.replace('> ', '')}</blockquote>;
+                    }
+                    if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+                      const items = trimmed.split(/\n[\-*] /);
+                      return (
+                        <ul key={i} className="list-none space-y-3 my-6">
+                          {items.map((item, idx) => (
+                            <li key={idx} className="flex gap-3 text-lg">
+                              <span className="text-conime-600 mt-2 shrink-0">•</span>
+                              <span dangerouslySetInnerHTML={{ __html: renderMarkdown(item.replace(/^[\-*] /, '')) }} />
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    }
+
+                    return (
+                      <React.Fragment key={i}>
+                        <p className="text-lg md:text-xl" dangerouslySetInnerHTML={{ __html: renderMarkdown(trimmed) }} />
+                        {i === point1 && inlineRec1 && <RelatedInline item={inlineRec1} title={t.readAlso} />}
+                        {i === point2 && inlineRec2 && <RelatedInline item={inlineRec2} title={t.readAlso} />}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
           </div>
 
           {article.gallery && article.gallery.length > 0 && (
@@ -521,11 +571,11 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                   onTouchEnd={handlePanEnd}
                >
                   <div className="relative w-full h-full border-green-500 flex items-center justify-center" style={{ perspective: '1000px' }}>
-                     {article.gallery[lightboxIndex].videoUrl ? (
+                     {getEmbedUrl(article.gallery[lightboxIndex].videoUrl) ? (
                        <div className="w-full h-full max-w-7xl max-h-screen aspect-video flex items-center justify-center p-4 md:p-16 lg:p-32">
                          <div className="w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black border border-white/10">
                            <iframe 
-                             src={`${article.gallery[lightboxIndex].videoUrl}?rel=0&autoplay=1`} 
+                             src={`${getEmbedUrl(article.gallery[lightboxIndex].videoUrl)}?rel=0&autoplay=1`} 
                              className="w-full h-full" 
                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                              allowFullScreen
@@ -567,11 +617,11 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                >
                   <div className="flex items-center gap-4">
                      <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-conime-600 border border-white/10 backdrop-blur-md">
-                        {article.gallery[lightboxIndex].videoUrl ? <Play className="w-6 h-6 fill-current" /> : <ImageIcon className="w-6 h-6" />}
+                        {getEmbedUrl(article.gallery[lightboxIndex].videoUrl) ? <Play className="w-6 h-6 fill-current" /> : <ImageIcon className="w-6 h-6" />}
                      </div>
                      <div className="min-w-0 hidden md:block">
                          <h4 className="text-white font-black uppercase text-sm tracking-[0.1em] truncate max-w-[180px] md:max-w-md">
-                           {article.gallery[lightboxIndex].videoUrl 
+                           {getEmbedUrl(article.gallery[lightboxIndex].videoUrl) 
                              ? (article.gallery[lightboxIndex].videoLabel ? getLocalized(article.gallery[lightboxIndex].videoLabel, language) : t.defaultVideoLabel) 
                              : t.visualGallery}
                          </h4>
@@ -580,7 +630,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                   </div>
                   
                   {/* ZOOM CONTROLS */}
-                  {!article.gallery[lightboxIndex].videoUrl && (
+                  {!getEmbedUrl(article.gallery[lightboxIndex].videoUrl) && (
                     <div className="hidden md:flex items-center gap-2 bg-black/40 backdrop-blur-xl border border-white/10 p-1.5 rounded-2xl mx-auto">
                        <button onClick={() => handleZoom(-0.5)} className="p-3 text-white hover:bg-white/10 rounded-xl transition-all" disabled={zoomLevel <= 1}>
                           <ZoomOut className="w-5 h-5" />
@@ -637,7 +687,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                        <div className="flex items-center justify-center gap-3 mt-2 opacity-60">
                           <div className="h-[1px] w-6 bg-white"></div>
                           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white">
-                             {article.gallery[lightboxIndex].videoUrl ? t.videoSourceLabel : t.imageSourceLabel}: {article.gallery[lightboxIndex].source || article.imageSource}
+                             {getEmbedUrl(article.gallery[lightboxIndex].videoUrl) ? t.videoSourceLabel : t.imageSourceLabel}: {article.gallery[lightboxIndex].source || article.imageSource}
                           </p>
                           <div className="h-[1px] w-6 bg-white"></div>
                        </div>
@@ -710,7 +760,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
              <div className="flex items-center gap-4">
                 <button 
                   onClick={handleLike}
-                  className={`flex items-center gap-3 px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 ${isLiked ? 'bg-conime-500 text-white shadow-conime-500/30 ring-2 ring-conime-500/20' : 'bg-conime-500/10 text-conime-500 hover:bg-conime-500 hover:text-white'}`}
+                  className={`flex items-center gap-3 px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 ${isLiked ? 'bg-conime-500 text-white shadow-conime-500/30 ring-2 ring-conime-500/20' : 'bg-conime-500/10 text-conime-500 hover:bg-conime-500 hover:text-white hover:dark:text-white'}`}
                 >
                   <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
                   <span>{t.likeLabel} ({formatK(likeCount)})</span>
@@ -727,13 +777,13 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
              <div className="flex items-center gap-3">
                 <button 
                   onClick={() => setShowShareModal(true)}
-                  className="p-4 bg-cogray-900 text-cogray-400 hover:text-white rounded-2xl transition-colors border border-cogray-800"
+                  className="p-4 bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white rounded-2xl transition-colors border border-cogray-800"
                 >
                   <Share2 className="w-5 h-5" />
                 </button>
                 <button 
                    onClick={onToggleBookmark}
-                   className={`p-4 rounded-2xl transition-all border ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-900 text-cogray-400 hover:text-white border-cogray-800'}`}
+                   className={`p-4 rounded-2xl transition-all border ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white border-cogray-800'}`}
                 >
                   <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
                 </button>
@@ -763,7 +813,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                         e.stopPropagation();
                         onCategoryClick(getLocalized(rel.category, 'en'));
                       }}
-                      className={`inline-block px-3 py-1 rounded-lg border border-conime-600/30 text-[10px] font-black uppercase tracking-widest text-conime-600 dark:text-conime-500 bg-transparent hover:bg-conime-600 hover:text-white transition-all`}
+                      className={`inline-block px-3 py-1 rounded-lg border border-conime-600/30 text-[10px] font-black uppercase tracking-widest text-conime-600 dark:text-conime-500 bg-transparent hover:bg-conime-600 hover:text-white hover:dark:text-white transition-all`}
                    >
                       {getLocalized(rel.category, language)}
                    </button>

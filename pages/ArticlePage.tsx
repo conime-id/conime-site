@@ -92,6 +92,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
       onToggleBookmark={() => toggleBookmark(article.id)}
       currentUser={currentUser}
       onLoginClick={onLoginClick}
+      articles={articles}
     />
   );
 };

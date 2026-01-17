@@ -32,6 +32,8 @@ export interface NewsItem {
     id: string;
     en: string;
   }; // Label kustom untuk video utama
+  videoSource?: string;
+  videoSourceUrl?: string;
   imageSource?: string;
   imageSourceUrl?: string;
   imageCaption?: {

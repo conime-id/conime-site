@@ -103,6 +103,27 @@ function formatBilingualDate(dateStr: string) {
 }
 
 /**
+ * Normalizes sub-category names for consistent routing and filtering.
+ * Maps both Indonesian and English terms to standard keys.
+ */
+function normalizeSubCategory(cat: string): { id: string, en: string } {
+  const c = (cat || '').toLowerCase().trim();
+  const map: Record<string, { id: string, en: string }> = {
+    'anime': { id: 'Anime', en: 'Anime' },
+    'komik': { id: 'Komik', en: 'Comics' },
+    'comics': { id: 'Komik', en: 'Comics' },
+    'comic': { id: 'Komik', en: 'Comics' },
+    'game': { id: 'Game', en: 'Games' },
+    'games': { id: 'Game', en: 'Games' },
+    'permainan': { id: 'Game', en: 'Games' },
+    'film': { id: 'Film', en: 'Movies' },
+    'movie': { id: 'Film', en: 'Movies' },
+    'movies': { id: 'Film', en: 'Movies' },
+  };
+  return map[c] || { id: cat, en: cat };
+}
+
+/**
  * Loads all articles from the src/content directory
  */
 export async function getAllArticles(): Promise<NewsItem[]> {
@@ -116,10 +137,18 @@ export async function getAllArticles(): Promise<NewsItem[]> {
     const { frontmatter, body } = parseMarkdown(content as string);
     const filename = path.split('/').pop()?.replace('.md', '') || 'unknown';
     
-    // Determine category based on folder path
+    // Determine category: Priority frontmatter.layout > Folder path
+    const layout = (frontmatter.layout || '').toLowerCase();
     let folderCategoryId = 'news';
     let folderCategoryEn = 'News';
-    if (path.includes('/opinion/')) {
+
+    if (layout === 'opinion') {
+      folderCategoryId = 'opinion';
+      folderCategoryEn = 'Opinion';
+    } else if (layout === 'reviews' || layout === 'ulasan') {
+      folderCategoryId = 'reviews';
+      folderCategoryEn = 'Reviews';
+    } else if (path.includes('/opinion/')) {
       folderCategoryId = 'opinion';
       folderCategoryEn = 'Opinion';
     } else if (path.includes('/reviews/')) {
@@ -127,8 +156,8 @@ export async function getAllArticles(): Promise<NewsItem[]> {
       folderCategoryEn = 'Reviews';
     }
 
-    // Split body into ID and EN if separator exists
-    const bodyParts = body.split(/\n---\n/);
+    // Split body into ID and EN if separator exists (robust regex for variants)
+    const bodyParts = body.split(/\r?\n\s*-{3,}\s*\r?\n/);
     const bodyId = bodyParts[0]?.trim() || '';
     const bodyEn = bodyParts[1]?.trim() || bodyId;
     
@@ -150,10 +179,7 @@ export async function getAllArticles(): Promise<NewsItem[]> {
         id: folderCategoryId,
         en: folderCategoryEn
       },
-      subCategory: {
-        id: frontmatter.category?.toLowerCase() || 'anime',
-        en: frontmatter.category || 'Anime'
-      },
+      subCategory: normalizeSubCategory(frontmatter.category || 'Anime'),
       author: frontmatter.author || 'CoNime Editorial',
       date: formatBilingualDate(frontmatter.date || new Date().toISOString()),
       imageUrl: frontmatter.thumbnail || '/icons/default.png',
@@ -162,6 +188,8 @@ export async function getAllArticles(): Promise<NewsItem[]> {
          id: frontmatter.video_title,
          en: frontmatter.video_title
       } : undefined,
+      videoSource: frontmatter.video_source,
+      videoSourceUrl: frontmatter.video_source_url,
       imageSource: frontmatter.image_credit,
       imageSourceUrl: frontmatter.image_source_url,
       imageCaption: frontmatter.image_title ? {
@@ -175,7 +203,7 @@ export async function getAllArticles(): Promise<NewsItem[]> {
       tags: frontmatter.topics?.map((t: string) => ({ id: t, en: t })) || [],
       gallery: frontmatter.gallery?.map((item: any) => ({
          url: item.image || item.url || '/icons/default.png',
-         videoUrl: item.type === 'video' ? item.url : undefined,
+         videoUrl: item.type === 'video' ? item.url : undefined, videoLabel: item.title ? { id: item.title, en: item.title } : undefined,
          source: item.source,
          caption: { id: item.title || '', en: item.title || '' }
       }))
