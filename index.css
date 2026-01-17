@@ -1,0 +1,281 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-ExtraLightItalic.ttf') format('truetype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/static/PlusJakartaSans-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Splash Screen Styles */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background-color: #0b0b16; /* Dark theme bg */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease-out;
+}
+
+.splash-spinner {
+  position: relative; 
+  width: 100px; 
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.splash-ring {
+  position: absolute; inset: 0; border-radius: 50%; 
+  border: 4px solid rgba(255, 21, 69, 0.1); 
+  border-top-color: #ff1545; 
+  animation: spin 1s linear infinite;
+}
+.splash-logo-container {
+  width: 50%;
+  height: 50%;
+  color: #cf012b;
+  animation: pulse 2s ease-in-out infinite;
+}
+.splash-text {
+  margin-top: 24px; 
+  font-family: 'Plus Jakarta Sans', sans-serif; 
+  font-weight: 800; 
+  color: white; 
+  letter-spacing: 0.2em; 
+  font-size: 14px; 
+}
+
+/* Blockquote Styles */
+ .article-content blockquote {
+      position: relative;
+      padding: 3rem;
+      margin: 4rem 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(240, 240, 243, 0.5) 100%);
+      border: none;
+      border-radius: 32px;
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1.6;
+      color: #10101d;
+    }
+
+    .dark .article-content blockquote {
+      background: linear-gradient(135deg, rgba(16, 16, 29, 0.5) 0%, rgba(11, 11, 22, 0.5) 100%);
+      border: none;
+      color: #ffffff;
+    }
+
+    .article-content blockquote::before {
+      content: '"';
+      position: absolute;
+      top: -20px;
+      left: 25px;
+      font-size: 100px;
+      opacity: 0.1;
+      font-family: serif;
+      line-height: 1;
+      color: currentColor;
+    }
+
+    @media (min-width: 1024px) {
+      .article-content blockquote::before {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+    }
+
+    /* Internal Link Styles */
+      /* 1. INTERNAL LINKS (Dalam Artikel) - Tetap Menonjol */
+    .article-content a {
+      color: #cf012b;
+      /* conime-600 */
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 2px solid rgba(207, 1, 43, 0.3);
+      padding-bottom: 1px;
+    }
+
+    .article-content a:hover {
+      color: #ff1545;
+      /* conime-500 */
+      border-bottom-color: #ff1545;
+      background-color: rgba(255, 21, 69, 0.05);
+    }
+
+    .dark .article-content a {
+      color: #ff1545;
+      /* conime-500 */
+      border-bottom-color: rgba(255, 21, 69, 0.3);
+    }
+
+    .dark .article-content a:hover {
+      color: #ff4d71;
+      border-bottom-color: #ff4d71;
+      background-color: rgba(255, 21, 69, 0.1);
+    }
+
+    /* 2. SOURCE LINKS (Metadata) - Lebih Halus, Underline Saat Hover */
+    .source-link {
+      color: inherit;
+      /* Ikut warna teks parent */
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 2px solid transparent;
+      padding-bottom: 1px;
+    }
+
+    .source-link:hover {
+      color: #cf012b !important;
+      border-bottom-color: #cf012b;
+      background-color: rgba(207, 1, 43, 0.05);
+    }
+
+    .dark .source-link:hover {
+      color: #ff1545 !important;
+      border-bottom-color: #ff1545;
+      background-color: rgba(255, 21, 69, 0.1);
+    }
+
+    /* 3. SCROLLBAR STYLING (Konsisten dengan Tema) */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .dark ::-webkit-scrollbar-track {
+      background: #10101d;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #d1d1d7;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #42424a;
+    }
+
+    ::-webkit-scrollbar-thumb:hover,
+    .is-scrolling ::-webkit-scrollbar-thumb,
+    ::-webkit-scrollbar-thumb:active {
+      background: #ff1545 !important;
+    }

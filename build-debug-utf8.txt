@@ -1,0 +1,1404 @@
+﻿npx : 2026-01-17T04
+:10:46.991Z 
+vite:config config 
+file loaded in 
+322.23ms
+At line:1 char:1
++ npx vite build 
+--debug > 
+build-debug.txt 
+2>&1
++ ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo 
+             : No  
+  tSpecified: (2   
+ 026-01-17T04:1    
+...ded in 322.    
+23ms:String) [    
+], RemoteExcep    
+tion
+    + FullyQualifi 
+   edErrorId : Na  
+  tiveCommandErr   
+ or
+ 
+2026-01-17T04:10:47
+.021Z vite:env 
+loading env files: 
+[
+  'C:/Users/hidhi/O
+neDrive/Desktop/Con
+ime-aistudio-v3/.en
+v',
+  'C:/Users/hidhi/O
+neDrive/Desktop/Con
+ime-aistudio-v3/.en
+v.local',
+  'C:/Users/hidhi/O
+neDrive/Desktop/Con
+ime-aistudio-v3/.en
+v.production',
+  'C:/Users/hidhi/O
+neDrive/Desktop/Con
+ime-aistudio-v3/.en
+v.production.local'
+]
+2026-01-17T04:10:47
+.022Z vite:env env 
+files loaded in 
+9.84ms
+2026-01-17T04:10:47
+.027Z vite:env 
+using resolved 
+env: {}
+2026-01-17T04:10:47
+.247Z vite:config 
+using resolved 
+config: {
+  server: {
+    port: 3000,
+    strictPort: 
+false,
+    host: 
+'0.0.0.0',
+    allowedHosts: 
+[],
+    https: 
+undefined,
+    open: false,
+    proxy: 
+undefined,
+    cors: {
+      origin: /^htt
+ps?:\/\/(?:(?:[^:]+
+\.)?localhost|127\.
+0\.0\.1|\[::1\])(?:
+:\d+)?$/
+    },
+    headers: {},
+    warmup: { 
+clientFiles: [], 
+ssrFiles: [] },
+    
+middlewareMode: 
+false,
+    fs: {
+      strict: true,
+      deny: [ 
+'.env', '.env.*', 
+'*.{crt,pem}', 
+'**/.git/**' ],
+      allow: [ 'C:/
+Users/hidhi/OneDriv
+e/Desktop/Conime-ai
+studio-v3' ]
+    },
+    preTransformReq
+uests: true,
+    perEnvironmentS
+tartEndDuringDev: 
+false,
+    sourcemapIgnore
+List: [Function: 
+isInNodeModules$1]
+  },
+  plugins: [
+    'vite:build-met
+adata',
+    'vite:watch-pac
+kage-data',
+    'alias',
+    
+'vite:react-babel',
+    'vite:react-ref
+resh',
+    
+'vite-plugin-pwa',
+    'vite:modulepre
+load-polyfill',
+    'vite:resolve',
+    'vite:html-inli
+ne-proxy',
+    'vite:css',
+    'vite:esbuild',
+    'vite:json',
+    
+'vite:wasm-helper',
+    'vite:worker',
+    'vite:asset',
+    'vite:react-vir
+tual-preamble',
+    'vite:wasm-fall
+back',
+    'vite:define',
+    
+'vite:css-post',
+    
+'vite:build-html',
+    'vite:worker-im
+port-meta-url',
+    'vite:asset-imp
+ort-meta-url',
+    'vite:force-sys
+temjs-wrap-complete
+',
+    'commonjs',
+    
+'vite:data-uri',
+    'vite:rollup-op
+tions-plugins',
+    'vite:dynamic-i
+mport-vars',
+    
+'vite:import-glob',
+    'vite-plugin-pw
+a:info',
+    'vite-plugin-pw
+a:build',
+    'vite-plugin-pw
+a:pwa-assets',
+    'vite:build-imp
+ort-analysis',
+    'vite:esbuild-t
+ranspile',
+    'vite:terser',
+    
+'vite:manifest',
+    'vite:ssr-manif
+est',
+    
+'vite:reporter',
+    'vite:load-fall
+back'
+  ],
+  resolve: {
+    externalConditi
+ons: [ 'node' ],
+    extensions: [
+      '.mjs',  
+'.js',
+      '.mts',  
+'.ts',
+      '.jsx',  
+'.tsx',
+      '.json'
+    ],
+    dedupe: [],
+    noExternal: [],
+    external: [],
+    
+preserveSymlinks: 
+false,
+    alias: [
+      {
+        find: '@',
+        
+replacement: 'C:\\U
+sers\\hidhi\\OneDri
+ve\\Desktop\\Conime
+-aistudio-v3'
+      },
+      {
+        find: 
+/^\/?@vite\/env/,
+        
+replacement: '/@fs/
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/node_m
+odules/vite/dist/cl
+ient/env.mjs'
+      },
+      {
+        find: /^\/?
+@vite\/client/,
+        
+replacement: '/@fs/
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/node_m
+odules/vite/dist/cl
+ient/client.mjs'
+      }
+    ],
+    mainFields: [ 
+'browser', 
+'module', 
+'jsnext:main', 
+'jsnext' ],
+    conditions: [ 
+'module', 
+'browser', 'develop
+ment|production' ],
+    builtins: []
+  },
+  build: {
+    target: [ 
+'es2020', 
+'edge88', 
+'firefox78', 
+'chrome87', 
+'safari14' ],
+    polyfillModuleP
+reload: true,
+    modulePreload: 
+{ polyfill: true },
+    outDir: 'dist',
+    assetsDir: 
+'assets',
+    
+assetsInlineLimit: 
+4096,
+    sourcemap: 
+false,
+    terserOptions: 
+{},
+    rollupOptions: 
+{ onwarn: 
+[Function: onwarn] 
+},
+    
+commonjsOptions: { 
+include: [ 
+/node_modules/ ], 
+extensions: [ 
+'.js', '.cjs' ] },
+    dynamicImportVa
+rsOptions: { 
+warnOnError: true, 
+exclude: [ 
+/node_modules/ ] },
+    write: true,
+    emptyOutDir: 
+null,
+    copyPublicDir: 
+true,
+    manifest: 
+false,
+    lib: false,
+    ssrManifest: 
+false,
+    ssrEmitAssets: 
+false,
+    reportCompresse
+dSize: true,
+    chunkSizeWarnin
+gLimit: 500,
+    watch: null,
+    cssCodeSplit: 
+true,
+    minify: 
+'esbuild',
+    ssr: false,
+    emitAssets: 
+true,
+    
+createEnvironment: 
+[Function: 
+createEnvironment],
+    cssTarget: [ 
+'es2020', 
+'edge88', 
+'firefox78', 
+'chrome87', 
+'safari14' ],
+    cssMinify: true
+  },
+  esbuild: { 
+jsxDev: false, 
+jsx: 'automatic', 
+jsxImportSource: 
+undefined },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react/jsx-de
+v-runtime',
+      
+'react/jsx-runtime'
+    ],
+    exclude: [],
+    needsInterop: 
+[],
+    extensions: [],
+    disabled: 
+undefined,
+    
+holdUntilCrawlEnd: 
+true,
+    force: false,
+    noDiscovery: 
+false,
+    
+esbuildOptions: { 
+preserveSymlinks: 
+false, jsx: 
+'automatic' }
+  },
+  ssr: {
+    target: 'node',
+    optimizeDeps: {
+      
+esbuildOptions: { 
+preserveSymlinks: 
+false },
+      include: [],
+      exclude: [],
+      
+needsInterop: [],
+      extensions: 
+[],
+      
+holdUntilCrawlEnd: 
+true,
+      force: false,
+      noDiscovery: 
+true
+    },
+    noExternal: [ 
+'workbox-window' ],
+    external: [],
+    resolve: {
+      conditions: 
+[ 'module', 
+'node', 'developmen
+t|production' ],
+      externalCondi
+tions: [ 'node' ]
+    }
+  },
+  environments: {
+    client: {
+      define: 
+undefined,
+      resolve: {
+        externalCon
+ditions: [ 'node' 
+],
+        
+extensions: [
+          '.mjs',  
+'.js',
+          '.mts',  
+'.ts',
+          '.jsx',  
+'.tsx',
+          '.json'
+        ],
+        dedupe: [],
+        
+noExternal: [],
+        external: 
+[],
+        
+preserveSymlinks: 
+false,
+        alias: [
+          {
+            find: 
+'@',
+            
+replacement: 'C:\\U
+sers\\hidhi\\OneDri
+ve\\Desktop\\Conime
+-aistudio-v3'
+          },
+          {
+            find: 
+/^\/?@vite\/env/,
+            
+replacement: '/@fs/
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/node_m
+odules/vite/dist/cl
+ient/env.mjs'
+          },
+          {
+            find: /
+^\/?@vite\/client/,
+            
+replacement: '/@fs/
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/node_m
+odules/vite/dist/cl
+ient/client.mjs'
+          }
+        ],
+        
+mainFields: [ 
+'browser', 
+'module', 
+'jsnext:main', 
+'jsnext' ],
+        
+conditions: [ 
+'module', 
+'browser', 'develop
+ment|production' ],
+        builtins: 
+[]
+      },
+      
+keepProcessEnv: 
+false,
+      consumer: 
+'client',
+      
+optimizeDeps: {
+        include: [
+          'react',
+          
+'react-dom',
+          'react/js
+x-dev-runtime',
+          
+'react/jsx-runtime'
+        ],
+        exclude: 
+[],
+        
+needsInterop: [],
+        
+extensions: [],
+        disabled: 
+undefined,
+        
+holdUntilCrawlEnd: 
+true,
+        force: 
+false,
+        
+noDiscovery: false,
+        
+esbuildOptions: { 
+preserveSymlinks: 
+false, jsx: 
+'automatic' }
+      },
+      dev: {
+        warmup: [],
+        sourcemap: 
+{ js: true },
+        sourcemapIg
+noreList: 
+[Function: 
+isInNodeModules$1],
+        preTransfor
+mRequests: true,
+        
+createEnvironment: 
+[Function: defaultC
+reateClientDevEnvir
+onment],
+        
+recoverable: true,
+        moduleRunne
+rTransform: false
+      },
+      build: {
+        target: [ 
+'es2020', 
+'edge88', 
+'firefox78', 
+'chrome87', 
+'safari14' ],
+        polyfillMod
+ulePreload: true,
+        
+modulePreload: { 
+polyfill: true },
+        outDir: 
+'dist',
+        assetsDir: 
+'assets',
+        
+assetsInlineLimit: 
+4096,
+        sourcemap: 
+false,
+        
+terserOptions: {},
+        
+rollupOptions: { 
+onwarn: [Function: 
+onwarn] },
+        
+commonjsOptions: { 
+include: [ 
+/node_modules/ ], 
+extensions: [ 
+'.js', '.cjs' ] },
+        dynamicImpo
+rtVarsOptions: { 
+warnOnError: true, 
+exclude: [ 
+/node_modules/ ] },
+        write: 
+true,
+        
+emptyOutDir: null,
+        
+copyPublicDir: 
+true,
+        manifest: 
+false,
+        lib: false,
+        
+ssrManifest: false,
+        
+ssrEmitAssets: 
+false,
+        reportCompr
+essedSize: true,
+        chunkSizeWa
+rningLimit: 500,
+        watch: 
+null,
+        
+cssCodeSplit: true,
+        minify: 
+'esbuild',
+        ssr: false,
+        
+emitAssets: true,
+        
+createEnvironment: 
+[Function: 
+createEnvironment],
+        cssTarget: 
+[ 'es2020', 
+'edge88', 
+'firefox78', 
+'chrome87', 
+'safari14' ],
+        cssMinify: 
+true
+      }
+    },
+    ssr: {
+      define: 
+undefined,
+      resolve: {
+        externalCon
+ditions: [ 'node' 
+],
+        
+extensions: [
+          '.mjs',  
+'.js',
+          '.mts',  
+'.ts',
+          '.jsx',  
+'.tsx',
+          '.json'
+        ],
+        dedupe: [],
+        
+noExternal: [ 
+'workbox-window' ],
+        external: 
+[],
+        
+preserveSymlinks: 
+false,
+        alias: [
+          {
+            find: 
+'@',
+            
+replacement: 'C:\\U
+sers\\hidhi\\OneDri
+ve\\Desktop\\Conime
+-aistudio-v3'
+          },
+          {
+            find: 
+/^\/?@vite\/env/,
+            
+replacement: '/@fs/
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/node_m
+odules/vite/dist/cl
+ient/env.mjs'
+          },
+          {
+            find: /
+^\/?@vite\/client/,
+            
+replacement: '/@fs/
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/node_m
+odules/vite/dist/cl
+ient/client.mjs'
+          }
+        ],
+        
+mainFields: [ 
+'module', 
+'jsnext:main', 
+'jsnext' ],
+        
+conditions: [ 
+'module', 'node', '
+development|product
+ion' ],
+        builtins: [
+          
+'_http_agent',     
+    
+'_http_client',    
+    '_http_common',
+          
+'_http_incoming',  
+    
+'_http_outgoing',  
+    '_http_server',
+          
+'_stream_duplex',  
+    '_stream_passth
+rough', 
+'_stream_readable',
+          '_stream_
+transform',   
+'_stream_wrap',    
+    
+'_stream_writable',
+          
+'_tls_common',     
+    '_tls_wrap',   
+        'assert',
+          
+'assert/strict',   
+    'async_hooks', 
+        'buffer',
+          
+'child_process',   
+    'cluster',     
+        'console',
+          
+'constants',       
+    'crypto',      
+        'dgram',
+          'diagnost
+ics_channel', 
+'dns',             
+    'dns/promises',
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+          
+'domain',          
+    'events',      
+        'fs',
+          
+'fs/promises',     
+    'http',        
+        'http2',
+          'https', 
+              
+'inspector',       
+    'inspector/prom
+ises',
+          
+'module',          
+    'net',         
+        'os',
+          'path',  
+              
+'path/posix',      
+    'path/win32',
+          
+'perf_hooks',      
+    'process',     
+        'punycode',
+          
+'querystring',     
+    'readline',    
+        'readline/p
+romises',
+          'repl',  
+              
+'stream',          
+    
+'stream/consumers',
+          
+'stream/promises', 
+    'stream/web',  
+        
+'string_decoder',
+          'sys',   
+              
+'timers',          
+    
+'timers/promises',
+          'tls',   
+              
+'trace_events',    
+    'tty',
+          'url',   
+              
+'util',            
+    'util/types',
+          'v8',    
+              
+'vm',              
+    'wasi',
+          
+'worker_threads',  
+    'zlib',        
+        /^node:/,
+          /^npm:/, 
+              
+/^bun:/
+        ]
+      },
+      
+keepProcessEnv: 
+true,
+      consumer: 
+'server',
+      
+optimizeDeps: {
+        include: 
+[],
+        exclude: 
+[],
+        
+needsInterop: [],
+        
+extensions: [],
+        disabled: 
+undefined,
+        
+holdUntilCrawlEnd: 
+true,
+        force: 
+false,
+        
+noDiscovery: true,
+        
+esbuildOptions: { 
+preserveSymlinks: 
+false }
+      },
+      dev: {
+        warmup: [],
+        sourcemap: 
+{ js: true },
+        sourcemapIg
+noreList: 
+[Function: 
+isInNodeModules$1],
+        preTransfor
+mRequests: false,
+        
+createEnvironment: 
+[Function: defaultC
+reateDevEnvironment
+],
+        
+recoverable: false,
+        moduleRunne
+rTransform: true
+      },
+      build: {
+        target: [ 
+'es2020', 
+'edge88', 
+'firefox78', 
+'chrome87', 
+'safari14' ],
+        polyfillMod
+ulePreload: true,
+        
+modulePreload: { 
+polyfill: true },
+        outDir: 
+'dist',
+        assetsDir: 
+'assets',
+        
+assetsInlineLimit: 
+4096,
+        sourcemap: 
+false,
+        
+terserOptions: {},
+        
+rollupOptions: { 
+onwarn: [Function: 
+onwarn] },
+        
+commonjsOptions: { 
+include: [ 
+/node_modules/ ], 
+extensions: [ 
+'.js', '.cjs' ] },
+        dynamicImpo
+rtVarsOptions: { 
+warnOnError: true, 
+exclude: [ 
+/node_modules/ ] },
+        write: 
+true,
+        
+emptyOutDir: null,
+        
+copyPublicDir: 
+true,
+        manifest: 
+false,
+        lib: false,
+        
+ssrManifest: false,
+        
+ssrEmitAssets: 
+false,
+        reportCompr
+essedSize: true,
+        chunkSizeWa
+rningLimit: 500,
+        watch: 
+null,
+        
+cssCodeSplit: true,
+        minify: 
+false,
+        ssr: true,
+        
+emitAssets: true,
+        
+createEnvironment: 
+[Function: 
+createEnvironment],
+        cssTarget: 
+[ 'es2020', 
+'edge88', 
+'firefox78', 
+'chrome87', 
+'safari14' ],
+        cssMinify: 
+'esbuild'
+      }
+    }
+  },
+  configFile: 'C:/U
+sers/hidhi/OneDrive
+/Desktop/Conime-ais
+tudio-v3/vite.confi
+g.ts',
+  configFileDepende
+ncies: [
+    'C:/Users/hidhi
+/OneDrive/Desktop/C
+onime-aistudio-v3/v
+ite.config.ts'
+  ],
+  inlineConfig: {
+    root: 
+undefined,
+    base: 
+undefined,
+    mode: 
+undefined,
+    configFile: 
+undefined,
+    configLoader: 
+undefined,
+    logLevel: 
+undefined,
+    clearScreen: 
+undefined,
+    build: {}
+  },
+  root: 'C:/Users/h
+idhi/OneDrive/Deskt
+op/Conime-aistudio-
+v3',
+  base: '/',
+  decodedBase: '/',
+  rawBase: '/',
+  publicDir: 'C:/Us
+ers/hidhi/OneDrive/
+Desktop/Conime-aist
+udio-v3/public',
+  cacheDir: 'C:/Use
+rs/hidhi/OneDrive/D
+esktop/Conime-aistu
+dio-v3/node_modules
+/.vite',
+  command: 'build',
+  mode: 
+'production',
+  isWorker: false,
+  mainConfig: null,
+  bundleChain: [],
+  isProduction: 
+true,
+  css: {
+    transformer: 
+'postcss',
+    preprocessorMax
+Workers: 0,
+    devSourcemap: 
+false
+  },
+  json: { 
+namedExports: 
+true, stringify: 
+'auto' },
+  builder: 
+undefined,
+  preview: {
+    port: 4173,
+    strictPort: 
+false,
+    host: 
+'0.0.0.0',
+    allowedHosts: 
+[],
+    https: 
+undefined,
+    open: false,
+    proxy: 
+undefined,
+    cors: {
+      origin: /^htt
+ps?:\/\/(?:(?:[^:]+
+\.)?localhost|127\.
+0\.0\.1|\[::1\])(?:
+:\d+)?$/
+    },
+    headers: {}
+  },
+  envDir: 'C:/Users
+/hidhi/OneDrive/Des
+ktop/Conime-aistudi
+o-v3',
+  env: { BASE_URL: 
+'/', MODE: 
+'production', DEV: 
+false, PROD: true 
+},
+  assetsInclude: 
+[Function: 
+assetsInclude],
+  logger: {
+    hasWarned: 
+false,
+    info: 
+[Function: info],
+    warn: 
+[Function: warn],
+    warnOnce: 
+[Function: 
+warnOnce],
+    error: 
+[Function: error],
+    clearScreen: 
+[Function: 
+clearScreen],
+    
+hasErrorLogged: 
+[Function: 
+hasErrorLogged]
+  },
+  packageCache: 
+Map(1) {
+    'fnpd_C:/Users/
+hidhi/OneDrive/Desk
+top/Conime-aistudio
+-v3' => {
+      dir: 'C:/User
+s/hidhi/OneDrive/De
+sktop/Conime-aistud
+io-v3',
+      data: {
+        name: 
+'conime-v3.0',
+        private: 
+true,
+        version: 
+'3.0.0',
+        type: 
+'module',
+        scripts: { 
+dev: 'vite', 
+build: 'vite 
+build', preview: 
+'vite preview' },
+        
+dependencies: {
+          
+'lucide-react': 
+'^0.562.0',
+          react: 
+'^19.2.3',
+          
+'react-dom': 
+'^19.2.3',
+          'react-ro
+uter-dom': 
+'^7.12.0',
+          'react-si
+mple-icons': 
+'^1.0.0-beta.5'
+        },
+        
+devDependencies: {
+          
+'@types/node': 
+'^22.14.0',
+          '@vitejs/
+plugin-react': 
+'^5.0.0',
+          
+autoprefixer: 
+'^10.4.23',
+          postcss: 
+'^8.5.6',
+          
+tailwindcss: 
+'^3.4.17',
+          
+typescript: 
+'~5.8.2',
+          vite: 
+'^6.2.0',
+          
+'vite-plugin-pwa': 
+'^1.2.0'
+        }
+      },
+      
+hasSideEffects: 
+[Function: 
+hasSideEffects],
+      
+setResolvedCache: 
+[Function: 
+setResolvedCache],
+      
+getResolvedCache: 
+[Function: 
+getResolvedCache]
+    },
+    set: [Function 
+(anonymous)]
+  },
+  worker: { 
+format: 'iife', 
+plugins: '() => 
+plugins', 
+rollupOptions: {} 
+},
+  appType: 'spa',
+  experimental: { i
+mportGlobRestoreExt
+ension: false, 
+hmrPartialAccept: 
+false },
+  future: 
+undefined,
+  dev: {
+    warmup: [],
+    sourcemap: { 
+js: true },
+    sourcemapIgnore
+List: [Function: 
+isInNodeModules$1],
+    preTransformReq
+uests: false,
+    
+createEnvironment: 
+[Function: defaultC
+reateDevEnvironment
+],
+    recoverable: 
+false,
+    moduleRunnerTra
+nsform: false
+  },
+  webSocketToken: 
+'3IoQun4k5nl-',
+  
+getSortedPlugins: 
+[Function: 
+getSortedPlugins],
+  getSortedPluginHo
+oks: [Function: get
+SortedPluginHooks],
+  createResolver: 
+[Function: 
+createResolver],
+  fsDenyGlob: 
+[Function: 
+arrayMatcher],
+  safeModulePaths: 
+Set(0) {},
+  additionalAllowed
+Hosts: [ 
+'0.0.0.0', 
+'0.0.0.0' ],
+  [Symbol(vite:reso
+lved-config)]: true
+}
+transforming...
+2026-01-17T04:10:57
+.520Z vite:resolve 
+[33m27.55ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Extr
+aLight.ttf[39m -> 
+[2mC:/Users/hidhi/
+OneDrive/Desktop/Co
+nime-aistudio-v3/fo
+nts/static/PlusJaka
+rtaSans-ExtraLight.
+ttf[22m
+2026-01-17T04:10:57
+.521Z vite:resolve 
+[33m27.72ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Extr
+aLightItalic.ttf[3
+9m -> [2mC:/Users/
+hidhi/OneDrive/Desk
+top/Conime-aistudio
+-v3/fonts/static/Pl
+usJakartaSans-Extra
+LightItalic.ttf[22
+m
+2026-01-17T04:10:57
+.521Z vite:resolve 
+[33m28.03ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Ligh
+t.ttf[39m -> [2mC
+:/Users/hidhi/OneDr
+ive/Desktop/Conime-
+aistudio-v3/fonts/s
+tatic/PlusJakartaSa
+ns-Light.ttf[22m
+2026-01-17T04:10:57
+.522Z vite:resolve 
+[33m28.59ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Ligh
+tItalic.ttf[39m 
+-> [2mC:/Users/hid
+hi/OneDrive/Desktop
+/Conime-aistudio-v3
+/fonts/static/PlusJ
+akartaSans-LightIta
+lic.ttf[22m
+2026-01-17T04:10:57
+.523Z vite:resolve 
+[33m29.70ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Regu
+lar.ttf[39m -> [2
+mC:/Users/hidhi/One
+Drive/Desktop/Conim
+e-aistudio-v3/fonts
+/static/PlusJakarta
+Sans-Regular.ttf[2
+2m
+2026-01-17T04:10:57
+.524Z vite:resolve 
+[33m30.36ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Ital
+ic.ttf[39m -> [2m
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/fonts/
+static/PlusJakartaS
+ans-Italic.ttf[22m
+2026-01-17T04:10:57
+.524Z vite:resolve 
+[33m30.63ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Medi
+um.ttf[39m -> [2m
+C:/Users/hidhi/OneD
+rive/Desktop/Conime
+-aistudio-v3/fonts/
+static/PlusJakartaS
+ans-Medium.ttf[22m
+2026-01-17T04:10:57
+.524Z vite:resolve 
+[33m30.86ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Medi
+umItalic.ttf[39m 
+-> [2mC:/Users/hid
+hi/OneDrive/Desktop
+/Conime-aistudio-v3
+/fonts/static/PlusJ
+akartaSans-MediumIt
+alic.ttf[22m
+2026-01-17T04:10:57
+.525Z vite:resolve 
+[33m30.72ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Semi
+Bold.ttf[39m -> [
+2mC:/Users/hidhi/On
+eDrive/Desktop/Coni
+me-aistudio-v3/font
+s/static/PlusJakart
+aSans-SemiBold.ttf
+[22m
+2026-01-17T04:10:57
+.525Z vite:resolve 
+[33m30.81ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Semi
+BoldItalic.ttf[39m
+ -> [2mC:/Users/hi
+dhi/OneDrive/Deskto
+p/Conime-aistudio-v
+3/fonts/static/Plus
+JakartaSans-SemiBol
+dItalic.ttf[22m
+2026-01-17T04:10:57
+.526Z vite:resolve 
+[33m31.19ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Bold
+.ttf[39m -> [2mC:
+/Users/hidhi/OneDri
+ve/Desktop/Conime-a
+istudio-v3/fonts/st
+atic/PlusJakartaSan
+s-Bold.ttf[22m
+2026-01-17T04:10:57
+.526Z vite:resolve 
+[33m31.92ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Bold
+Italic.ttf[39m -> 
+[2mC:/Users/hidhi/
+OneDrive/Desktop/Co
+nime-aistudio-v3/fo
+nts/static/PlusJaka
+rtaSans-BoldItalic.
+ttf[22m
+2026-01-17T04:10:57
+.526Z vite:resolve 
+[33m32.16ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Extr
+aBold.ttf[39m -> 
+[2mC:/Users/hidhi/O
+neDrive/Desktop/Con
+ime-aistudio-v3/fon
+ts/static/PlusJakar
+taSans-ExtraBold.tt
+f[22m
+2026-01-17T04:10:57
+.526Z vite:resolve 
+[33m32.35ms[39m 
+[36m/fonts/static/P
+lusJakartaSans-Extr
+aBoldItalic.ttf[39
+m -> [2mC:/Users/h
+idhi/OneDrive/Deskt
+op/Conime-aistudio-
+v3/fonts/static/Plu
+sJakartaSans-ExtraB
+oldItalic.ttf[22m
+[32mΓ£ô[39m 1739 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mregisterSW.js                                         [39m[1m[2m  0.13 kB[22m[1m[22m
+[2mdist/[22m[32mmanifest.webmanifest                                  [39m[1m[2m  0.56 kB[22m[1m[22m
+[2mdist/[22m[32mindex.html                                            [39m[1m[2m  3.41 kB[22m[1m[22m[2m Γöé gzip:   1.29 kB[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Regular-C2UfmnDu.ttf           [39m[1m[2m 94.76 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraLight-BGLNfZkX.ttf        [39m[1m[2m 94.76 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Bold-C5aszj9T.ttf              [39m[1m[2m 94.77 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraBold-lsARrC6D.ttf         [39m[1m[2m 94.78 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Light-BrLwd2-f.ttf             [39m[1m[2m 94.79 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Medium-C2x3RLjU.ttf            [39m[1m[2m 94.81 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-SemiBold-BAz3r7B9.ttf          [39m[1m[2m 94.84 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Italic-CWihPloP.ttf            [39m[1m[2m 96.92 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-BoldItalic-BcDGTW1o.ttf        [39m[1m[2m 97.00 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraBoldItalic-HNg9RQMa.ttf   [39m[1m[2m 97.03 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-SemiBoldItalic-D_Gr6rc4.ttf    [39m[1m[2m 97.08 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-MediumItalic-BUt0XVGn.ttf      [39m[1m[2m 97.12 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-LightItalic-BNieXB4D.ttf       [39m[1m[2m 97.15 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraLightItalic--UMxmR10.ttf  [39m[1m[2m 97.15 kB[22m[1m[22m
+[2mdist/[22m[35massets/index-BvscJiXG.css                             [39m[1m[2m 76.60 kB[22m[1m[22m[2m Γöé gzip:  11.16 kB[22m
+[2mdist/[22m[36massets/index-CT5MQl6D.js                              [39m[1m[2m477.21 kB[22m[1m[22m[2m Γöé gzip: 133.73 kB[22m
+[32mΓ£ô built in 45.75s[39m
+[31merror during 
+build:
+Error: Cannot find 
+module 'C:\Users\hi
+dhi\OneDrive\Deskto
+p\Conime-aistudio-v
+3\node_modules\work
+box-build\build\ind
+ex.js'. Please 
+verify that the 
+package.json has a 
+valid "main" entry
+    at tryPackage (
+node:internal/modul
+es/cjs/loader:445:1
+9)
+    at 
+Module._findPath (n
+ode:internal/module
+s/cjs/loader:716:18
+)
+    at Module._reso
+lveFilename (node:i
+nternal/modules/cjs
+/loader:1131:27)
+    at 
+Module._load (node:
+internal/modules/cj
+s/loader:986:27)
+    at 
+Module.require (nod
+e:internal/modules/
+cjs/loader:1233:19)
+    at require (nod
+e:internal/modules/
+helpers:179:18)
+    at 
+loadWorkboxBuild (f
+ile:///C:/Users/hid
+hi/OneDrive/Desktop
+/Conime-aistudio-v3
+/node_modules/vite-
+plugin-pwa/dist/ind
+ex.js:162:12)
+    at process.proc
+essTicksAndRejectio
+ns (node:internal/p
+rocess/task_queues:
+95:5)
+    at async genera
+teServiceWorker (fi
+le:///C:/Users/hidh
+i/OneDrive/Desktop/
+Conime-aistudio-v3/
+node_modules/vite-p
+lugin-pwa/dist/inde
+x.js:207:26)
+    at async 
+_generateSW (file:/
+//C:/Users/hidhi/On
+eDrive/Desktop/Coni
+me-aistudio-v3/node
+_modules/vite-plugi
+n-pwa/dist/index.js
+:234:5)[39m

@@ -1,0 +1,74 @@
+
+import React from 'react';
+import { MOCK_NEWS, TRANSLATIONS, getCategoryColor } from '../constants';
+import { getLocalized } from '../utils/localization';
+
+interface TrendingSectionProps {
+  language: 'id' | 'en';
+  onArticleClick: (id: string) => void;
+  onCategoryClick: (category: string) => void;
+}
+
+const TrendingSection: React.FC<TrendingSectionProps> = ({ language, onArticleClick, onCategoryClick }) => {
+  const t = TRANSLATIONS[language];
+  
+  const popularArticles = MOCK_NEWS.slice(1, 5).map(item => ({
+    id: item.id,
+    title: getLocalized(item.title, language),
+    image: item.imageUrl,
+    categoryName: getLocalized(item.category, language),
+    categoryEn: typeof item.category === 'string' ? item.category : (item.category?.en || '')
+  }));
+
+  return (
+    <section className="relative overflow-hidden group my-12 transition-all duration-300 rounded-[40px] p-8 md:p-12 border bg-gradient-to-br from-white to-cogray-50 dark:from-cogray-900 dark:to-cogray-950 border-cogray-200 dark:border-conime-500/10 shadow-xl dark:shadow-2xl">
+      <div className="absolute -top-10 -left-10 w-32 h-32 bg-conime-500/5 blur-[50px] group-hover:scale-150 transition-transform duration-1000 pointer-events-none"></div>
+      
+      <div className="flex items-center justify-between mb-10 relative z-10">
+        <div className="flex items-center gap-4 text-left">
+          <div className="w-12 h-12 bg-conime-500 rounded-2xl flex items-center justify-center shadow-lg shadow-conime-500/40 group-hover:rotate-6 transition-transform">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+          </div>
+          <h2 className="text-3xl font-black text-cogray-900 dark:text-white uppercase tracking-tighter">{t.trending}</h2>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+        {popularArticles.map((article, idx) => (
+          <div 
+            key={article.id} 
+            onClick={() => onArticleClick(article.id)}
+            className="group/card cursor-pointer relative aspect-[3/4.2] rounded-[32px] overflow-hidden border border-cogray-200 dark:border-cogray-800 hover:border-conime-500/30 transition-all shadow-lg dark:shadow-xl bg-white dark:bg-cogray-950"
+          >
+            <img 
+              src={article.image} 
+              alt={article.title} 
+              className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-1000 opacity-80 dark:opacity-60 group-hover/card:opacity-100 dark:group-hover/card:opacity-90" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 dark:from-[#0b0b16] dark:via-[#0b0b16]/40 to-transparent"></div>
+            
+            <div className="absolute top-5 left-5 w-10 h-10 bg-conime-500 text-white font-black flex items-center justify-center rounded-full shadow-2xl shadow-conime-500/50 border-4 border-white dark:border-cogray-950 text-sm z-20">
+              {idx + 1}
+            </div>
+
+            <div className="absolute bottom-6 left-6 right-6 text-left z-20">
+              <button 
+                onClick={(e) => { e.stopPropagation(); onCategoryClick(article.categoryName); }}
+                className={`${getCategoryColor(article.categoryEn)} text-white text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-widest mb-3 inline-block shadow-lg hover:brightness-110`}
+              >
+                {article.categoryName.replace('#', '').split(' ')[0]}
+              </button>
+              <h3 className="text-sm font-black text-cogray-900 dark:text-white uppercase tracking-tight line-clamp-2 leading-tight group-hover/card:text-conime-500 dark:group-hover/card:text-conime-400 transition-colors">
+                {article.title}
+              </h3>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default TrendingSection;

@@ -1,0 +1,35 @@
+﻿
+> conime-v3.0@3.0.0 build
+> vite build
+
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 1739 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mregisterSW.js                                         [39m[1m[2m  0.13 kB[22m[1m[22m
+[2mdist/[22m[32massets/favicon-16-Dnu9tbUh.png                        [39m[1m[2m  0.35 kB[22m[1m[22m
+[2mdist/[22m[32massets/manifest-CLdB3xsx.json                         [39m[1m[2m  0.45 kB[22m[1m[22m[2m Γöé gzip:   0.24 kB[22m
+[2mdist/[22m[32massets/favicon-32-3KOtx-7K.png                        [39m[1m[2m  0.55 kB[22m[1m[22m
+[2mdist/[22m[32mmanifest.webmanifest                                  [39m[1m[2m  0.56 kB[22m[1m[22m
+[2mdist/[22m[32massets/apple-touch-icon-Nb6nDd_X.png                  [39m[1m[2m  2.17 kB[22m[1m[22m
+[2mdist/[22m[32massets/android-chrome-192-DTKz-uhK.png                [39m[1m[2m  2.27 kB[22m[1m[22m
+[2mdist/[22m[32mindex.html                                            [39m[1m[2m  3.49 kB[22m[1m[22m[2m Γöé gzip:   1.34 kB[22m
+[2mdist/[22m[32massets/android-chrome-512-CTuKeH6u.png                [39m[1m[2m  6.79 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Regular-C2UfmnDu.ttf           [39m[1m[2m 94.76 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraLight-BGLNfZkX.ttf        [39m[1m[2m 94.76 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Bold-C5aszj9T.ttf              [39m[1m[2m 94.77 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraBold-lsARrC6D.ttf         [39m[1m[2m 94.78 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Light-BrLwd2-f.ttf             [39m[1m[2m 94.79 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Medium-C2x3RLjU.ttf            [39m[1m[2m 94.81 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-SemiBold-BAz3r7B9.ttf          [39m[1m[2m 94.84 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-Italic-CWihPloP.ttf            [39m[1m[2m 96.92 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-BoldItalic-BcDGTW1o.ttf        [39m[1m[2m 97.00 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraBoldItalic-HNg9RQMa.ttf   [39m[1m[2m 97.03 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-SemiBoldItalic-D_Gr6rc4.ttf    [39m[1m[2m 97.08 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-MediumItalic-BUt0XVGn.ttf      [39m[1m[2m 97.12 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-LightItalic-BNieXB4D.ttf       [39m[1m[2m 97.15 kB[22m[1m[22m
+[2mdist/[22m[32massets/PlusJakartaSans-ExtraLightItalic--UMxmR10.ttf  [39m[1m[2m 97.15 kB[22m[1m[22m
+[2mdist/[22m[35massets/index-BvscJiXG.css                             [39m[1m[2m 76.60 kB[22m[1m[22m[2m Γöé gzip:  11.16 kB[22m
+[2mdist/[22m[36massets/index-CT5MQl6D.js                              [39m[1m[2m477.21 kB[22m[1m[22m[2m Γöé gzip: 133.73 kB[22m
+[32mΓ£ô built in 36.02s[39m

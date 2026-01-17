@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoNime | Portal Berita Budaya Pop Visual</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Portal informasi terpercaya mengenai anime, manga, dan perkembangan budaya pop visual global." />
+
+  <meta property="og:title" content="CoNime | Portal Berita Budaya Pop Visual" />
+  <meta property="og:description"
+    content="Portal informasi terpercaya mengenai anime, manga, dan perkembangan budaya pop visual global." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://conime.id" />
+  <meta property="og:site_name" content="CoNime" />
+  <meta property="og:image" content="https://conime.id/icons/og-cover.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:site" content="@conime_id">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CoNime | Portal Berita Budaya Pop Visual" />
+  <meta name="twitter:description"
+    content="Portal informasi terpercaya mengenai anime, manga, dan perkembangan budaya pop visual global." />
+  <meta name="twitter:image" content="https://conime.id/icons/og-cover.png" />
+  <meta name="twitter:url" content="https://conime.id/" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-chrome-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/android-chrome-512.png">
+
+  <link rel="shortcut icon" href="/icons/favicon-32.png">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="canonical" href="https://conime.id/">
+
+  <style>
+    /* Critical Splash Screen Styles */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    .splash-screen {
+      position: fixed; inset: 0; background-color: #0b0b16;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 0.5s ease-out;
+    }
+    .splash-spinner {
+      position: relative; width: 100px; height: 100px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .splash-ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 4px solid rgba(255, 21, 69, 0.1); border-top-color: #ff1545;
+      animation: spin 1s linear infinite;
+    }
+    .splash-logo-container {
+      width: 50%; height: 50%; color: #cf012b;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .splash-text {
+      margin-top: 24px; font-family: sans-serif;
+      font-weight: 800; color: white; letter-spacing: 0.2em; font-size: 14px;
+    }
+  </style>
+</head>
+
+<body class="bg-white dark:bg-cogray-950 transition-colors duration-300">
+  <div id="root">
+    <!-- Splash Screen (Successfully replaced by React on Hydration) -->
+    <div class="splash-screen">
+      <div class="splash-spinner">
+        <div class="splash-ring"></div>
+        <div class="splash-logo-container">
+          <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+            <path d="M94.6558 20C101.876 20 106.095 28.1412 101.932 34.0407L75.9289 70.8906H18.3376C11.1172 70.8906 6.89803 62.7495 11.061 56.85L34.4028 23.7712C36.0715 21.4064 38.7852 20 41.6795 20H94.6558Z" fill="currentColor"/>
+            <path d="M121.662 120C128.883 120 133.102 111.859 128.939 105.959L106.129 73.6347C104.126 70.797 100.87 69.1094 97.3968 69.1094H18.3379C11.1174 69.1094 6.89823 77.2506 11.0613 83.1501L34.4037 116.229C36.0724 118.594 38.7861 120 41.6803 120H121.662Z" fill="currentColor"/>
+          </svg>
+        </div>
+      </div>
+      <div class="splash-text">LOADING</div>
+    </div>
+  </div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>
