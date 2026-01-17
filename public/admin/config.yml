@@ -19,6 +19,7 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
+      
       # --- INFO UTAMA ---
       - {label: "Layout", name: "layout", widget: "hidden", default: "news"}
       - {label: "Title (ID)", name: "title_id", widget: "string"}
@@ -26,7 +27,7 @@ collections:
       
       # --- SEO & SUMMARY ---
       - {label: "Excerpt / SEO Description", name: "excerpt", widget: "text", hint: "Ringkasan pendek artikel untuk Meta Description SEO."}
-      
+
       # --- PENULIS & WAKTU ---
       - {label: "Author", name: "author", widget: "string", default: "CoNime Editorial"}
       - {label: "Publish Date", name: "date", widget: "datetime"}
@@ -44,11 +45,6 @@ collections:
       - {label: "Video Title", name: "video_title", widget: "string", required: false}
       - {label: "Video Source", name: "video_source", widget: "string", required: false, hint: "Contoh: Channel YouTube Kadokawa"}
 
-      # --- ISI ARTIKEL ---
-      # Body sudah support: Paragraf, Bold, Link Sisipan, Blockquote, Image (tombol +)
-      - {label: "Body (ID)", name: "body_id", widget: "markdown", hint: "Gunakan toolbar diatas untuk Bold, Quote, Link, dll."}
-      - {label: "Body (EN)", name: "body_en", widget: "markdown", required: false}
-      
       # --- GALERI (FOTO & VIDEO) ---
       - label: "Gallery"
         name: "gallery"
@@ -74,6 +70,11 @@ collections:
       - {label: "Article Source Name", name: "source_name", widget: "string", required: false, hint: "Contoh: Natalie.mu"}
       - {label: "Article Source URL", name: "source_url", widget: "string", required: false}
 
+      # --- ISI ARTIKEL ---
+      # Body ditaruh paling bawah agar enak nulisnya setelah isi metadata
+      - {label: "Body (ID)", name: "body_id", widget: "markdown", hint: "Gunakan toolbar diatas untuk Bold, Quote, Link, dll."}
+      - {label: "Body (EN)", name: "body_en", widget: "markdown", required: false}
+      
   - name: "opinion"
     label: "Opinion"
     folder: "src/content/opinion"
@@ -92,6 +93,6 @@ collections:
     fields:
       - {label: "Title (ID)", name: "title_id", widget: "string"}
       - {label: "Author", name: "author", widget: "string", default: "CoNime Editorial"}
-      - {label: "Rating", name: "rating", widget: "hidden"} # Disembunyikan, bukan dihapus agar struktur aman
+      - {label: "Rating", name: "rating", widget: "hidden"}
       - {label: "Thumbnail", name: "thumbnail", widget: "image"}
       - {label: "Body (ID)", name: "body_id", widget: "markdown"}
