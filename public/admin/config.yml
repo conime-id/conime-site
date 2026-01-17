@@ -30,3 +30,15 @@ collections:
        - {label: "Title (ID)", name: "title_id", widget: "string"}
        - {label: "Title (EN)", name: "title_en", widget: "string"}
        - {label: "Body (ID)", name: "body_id", widget: "markdown"}
+       - {label: "Body (EN)", name: "body_en", widget: "markdown"}
+
+  - name: "reviews"
+    label: "Reviews"
+    folder: "src/content/reviews"
+    create: true
+    fields:
+       - {label: "Title (ID)", name: "title_id", widget: "string"}
+       - {label: "Title (EN)", name: "title_en", widget: "string"}
+       - {label: "Rating", name: "rating", widget: "number", value_type: "float", min: 0, max: 10}
+       - {label: "Body (ID)", name: "body_id", widget: "markdown"}
+       - {label: "Body (EN)", name: "body_en", widget: "markdown"}
