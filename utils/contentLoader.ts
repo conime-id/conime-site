@@ -145,7 +145,7 @@ export async function getAllArticles(): Promise<NewsItem[]> {
       },
       author: frontmatter.author || 'CoNime Editorial',
       date: formatBilingualDate(frontmatter.date || new Date().toISOString()),
-      imageUrl: frontmatter.thumbnail || '',
+      imageUrl: frontmatter.thumbnail || '/icons/default.png',
       videoUrl: frontmatter.video_url,
       videoLabel: frontmatter.video_title ? {
          id: frontmatter.video_title,
@@ -163,7 +163,7 @@ export async function getAllArticles(): Promise<NewsItem[]> {
       featured: frontmatter.featured === 'true' || frontmatter.featured === true,
       tags: frontmatter.topics?.map((t: string) => ({ id: t, en: t })) || [],
       gallery: frontmatter.gallery?.map((item: any) => ({
-         url: item.image || item.url || '',
+         url: item.image || item.url || '/icons/default.png',
          videoUrl: item.type === 'video' ? item.url : undefined,
          source: item.source,
          caption: { id: item.title || '', en: item.title || '' }
