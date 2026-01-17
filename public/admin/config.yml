@@ -1,50 +1,94 @@
 backend:
   name: git-gateway
   branch: main
-  repo: conime-id/conime-site # Repository baru Anda
+  repo: conime-id/conime-site
 
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
+# Konfigurasi Slug agar URL artikel rapi (Tahun-Bulan-Tanggal-Judul)
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
 collections:
   - name: "news"
     label: "News"
-    folder: "src/content/news" # Nanti kita perlu sesuaikan struktur ini agar CMS bisa edit file JSON/Markdown
+    folder: "src/content/news"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
+      # --- INFO UTAMA ---
       - {label: "Layout", name: "layout", widget: "hidden", default: "news"}
       - {label: "Title (ID)", name: "title_id", widget: "string"}
-      - {label: "Title (EN)", name: "title_en", widget: "string"}
+      - {label: "Title (EN)", name: "title_en", widget: "string", required: false}
+      
+      # --- PENULIS & WAKTU ---
+      - {label: "Author", name: "author", widget: "string", default: "CoNime Editorial"}
       - {label: "Publish Date", name: "date", widget: "datetime"}
-      - {label: "Featured Image", name: "thumbnail", widget: "image"}
+      
+      # --- KATEGORI & TOPIK ---
       - {label: "Category", name: "category", widget: "select", options: ["Anime", "Film", "Game", "Komik"]}
+      - {label: "Topics", name: "topics", widget: "list", required: false, hint: "Tag topik (contoh: One Piece, Isekai, Action)"}
+
+      # --- MEDIA UTAMA (THUMBNAIL) ---
+      - {label: "Featured Image", name: "thumbnail", widget: "image"}
+      - {label: "Image Credit/Source", name: "image_credit", widget: "string", required: false, hint: "Contoh: TMS Entertainment / Shueisha"}
       
-      # Fields khusus untuk kebutuhan layout CoNime
-      - {label: "Source Name", name: "source_name", widget: "string", required: false, hint: "Contoh: YouTube, Natalie.mu"}
-      - {label: "Source URL", name: "source_url", widget: "string", required: false}
-      - {label: "Gallery Images", name: "gallery", widget: "list", required: false, field: {label: "Image", name: "image", widget: "image"}}
+      # --- VIDEO SISIPAN (Hanya Link) ---
+      - {label: "Video Link", name: "video_url", widget: "string", required: false, hint: "Link YouTube/MP4"}
+      - {label: "Video Title", name: "video_title", widget: "string", required: false}
+      - {label: "Video Source", name: "video_source", widget: "string", required: false, hint: "Contoh: Channel YouTube Kadokawa"}
+
+      # --- ISI ARTIKEL ---
+      # Body sudah support: Paragraf, Bold, Link Sisipan, Blockquote, Image (tombol +)
+      - {label: "Body (ID)", name: "body_id", widget: "markdown", hint: "Gunakan toolbar diatas untuk Bold, Quote, Link, dll."}
+      - {label: "Body (EN)", name: "body_en", widget: "markdown", required: false}
       
-      - {label: "Body (ID)", name: "body_id", widget: "markdown"}
-      - {label: "Body (EN)", name: "body_en", widget: "markdown"}
-    
+      # --- GALERI (FOTO & VIDEO) ---
+      - label: "Gallery"
+        name: "gallery"
+        widget: "list"
+        required: false
+        types:
+          - label: "Photo"
+            name: "photo"
+            widget: "object"
+            fields:
+              - {label: "Image", name: "image", widget: "image"}
+              - {label: "Title/Caption", name: "title", widget: "string"}
+              - {label: "Source", name: "source", widget: "string"}
+          - label: "Video"
+            name: "video"
+            widget: "object"
+            fields:
+              - {label: "Video URL", name: "url", widget: "string"}
+              - {label: "Title", name: "title", widget: "string"}
+              - {label: "Source", name: "source", widget: "string"}
+
+      # --- SUMBER ARTIKEL ---
+      - {label: "Article Source Name", name: "source_name", widget: "string", required: false, hint: "Contoh: Natalie.mu"}
+      - {label: "Article Source URL", name: "source_url", widget: "string", required: false}
+
   - name: "opinion"
     label: "Opinion"
     folder: "src/content/opinion"
     create: true
     fields:
-       - {label: "Title (ID)", name: "title_id", widget: "string"}
-       - {label: "Title (EN)", name: "title_en", widget: "string"}
-       - {label: "Body (ID)", name: "body_id", widget: "markdown"}
-       - {label: "Body (EN)", name: "body_en", widget: "markdown"}
+      - {label: "Title (ID)", name: "title_id", widget: "string"}
+      - {label: "Author", name: "author", widget: "string", default: "CoNime Editorial"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Thumbnail", name: "thumbnail", widget: "image"}
+      - {label: "Body (ID)", name: "body_id", widget: "markdown"}
 
   - name: "reviews"
     label: "Reviews"
     folder: "src/content/reviews"
     create: true
     fields:
-       - {label: "Title (ID)", name: "title_id", widget: "string"}
-       - {label: "Title (EN)", name: "title_en", widget: "string"}
-       - {label: "Rating", name: "rating", widget: "number", value_type: "float", min: 0, max: 10}
-       - {label: "Body (ID)", name: "body_id", widget: "markdown"}
-       - {label: "Body (EN)", name: "body_en", widget: "markdown"}
+      - {label: "Title (ID)", name: "title_id", widget: "string"}
+      - {label: "Author", name: "author", widget: "string", default: "CoNime Editorial"}
+      - {label: "Rating", name: "rating", widget: "hidden"} # Disembunyikan, bukan dihapus agar struktur aman
+      - {label: "Thumbnail", name: "thumbnail", widget: "image"}
+      - {label: "Body (ID)", name: "body_id", widget: "markdown"}
