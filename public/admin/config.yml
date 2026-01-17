@@ -24,6 +24,9 @@ collections:
       - {label: "Title (ID)", name: "title_id", widget: "string"}
       - {label: "Title (EN)", name: "title_en", widget: "string", required: false}
       
+      # --- SEO & SUMMARY ---
+      - {label: "Excerpt / SEO Description", name: "excerpt", widget: "text", hint: "Ringkasan pendek artikel untuk Meta Description SEO."}
+      
       # --- PENULIS & WAKTU ---
       - {label: "Author", name: "author", widget: "string", default: "CoNime Editorial"}
       - {label: "Publish Date", name: "date", widget: "datetime"}
