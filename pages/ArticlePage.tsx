@@ -30,7 +30,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   addHistory,
   articles
 }) => {
-  const { id } = useParams();
+  const { id, subCategory } = useParams();
   const navigate = useNavigate();
 
   // Log component mount/remount
@@ -41,7 +41,8 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
     };
   }, []);
 
-  const article = useMemo(() => articles.find(n => n.id === id), [id, articles]);
+  const articleId = id || subCategory;
+  const article = useMemo(() => articles.find(n => n.id === articleId), [articleId, articles]);
 
   // Update Reading History and Document Title
   useEffect(() => {

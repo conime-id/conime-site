@@ -4,7 +4,7 @@ title_id: "Anime Oshi no Ko Season 3 Dikonfirmasi Tayang Januari 2026, Ruby Jadi
 title_en: "Oshi no Ko Season 3 Confirmed for January 2026, Ruby Takes Center Stage"
 excerpt_id: "Anime Oshi no Ko resmi mengumumkan musim ketiga yang akan tayang pada Januari 2026. Visual karakter Ruby Hoshino, teaser terbaru, pemeran baru, hingga konser virtual B-Komachi turut diperkenalkan."
 excerpt_en: "Oshi no Ko officially confirms its third season for January 2026, unveiling a new Ruby-focused visual, teaser footage, new cast members, and a virtual B-Komachi concert."
-author: "CoNime Editorial"
+author: "Koni"
 date: 2026-01-01T13:11:00Z
 category: "Anime"
 topics:

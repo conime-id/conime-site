@@ -116,6 +116,17 @@ export async function getAllArticles(): Promise<NewsItem[]> {
     const { frontmatter, body } = parseMarkdown(content as string);
     const filename = path.split('/').pop()?.replace('.md', '') || 'unknown';
     
+    // Determine category based on folder path
+    let folderCategoryId = 'news';
+    let folderCategoryEn = 'News';
+    if (path.includes('/opinion/')) {
+      folderCategoryId = 'opinion';
+      folderCategoryEn = 'Opinion';
+    } else if (path.includes('/reviews/')) {
+      folderCategoryId = 'reviews';
+      folderCategoryEn = 'Reviews';
+    }
+
     // Split body into ID and EN if separator exists
     const bodyParts = body.split(/\n---\n/);
     const bodyId = bodyParts[0]?.trim() || '';
@@ -136,8 +147,8 @@ export async function getAllArticles(): Promise<NewsItem[]> {
         en: bodyEn
       },
       category: {
-        id: frontmatter.category?.toLowerCase() || 'anime',
-        en: frontmatter.category || 'Anime'
+        id: folderCategoryId,
+        en: folderCategoryEn
       },
       subCategory: {
         id: frontmatter.category?.toLowerCase() || 'anime',
