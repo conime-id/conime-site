@@ -78,9 +78,12 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({
       return;
     }
 
-    // Generate avatar if empty
+    // Generate avatar if empty or invalid
     let avatarToSave = formData.avatar;
-    if (!avatarToSave || avatarToSave.trim() === '') {
+    if (!avatarToSave || 
+        avatarToSave.trim() === '' || 
+        (avatarToSave.length < 5) || // "U" is length 1
+        (!avatarToSave.startsWith('http') && !avatarToSave.startsWith('/') && !avatarToSave.startsWith('data:'))) {
       avatarToSave = DEFAULT_AVATAR;
     }
 
@@ -184,7 +187,15 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({
               <div className="p-8 mb-4 text-center">
                 <div className="relative inline-block group mb-6">
                   <div className="w-32 h-32 rounded-[40px] overflow-hidden border-4 border-white dark:border-cogray-950 group-hover:border-conime-600 transition-all shadow-2xl relative z-10">
-                    <img src={formData.avatar} alt={formData.username} className="w-full h-full object-cover" />
+                    <img 
+                      src={(formData.avatar && (formData.avatar.startsWith('http') || formData.avatar.startsWith('/') || formData.avatar.startsWith('data:'))) ? formData.avatar : DEFAULT_AVATAR} 
+                      alt={formData.username} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => {
+                         e.currentTarget.onerror = null;
+                         e.currentTarget.src = DEFAULT_AVATAR;
+                      }}
+                    />
                   </div>
                   <label className="absolute -bottom-2 -right-2 p-2.5 bg-conime-600 text-white rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all cursor-pointer group/cam z-20">
                     <Camera className="w-4 h-4 group-hover/cam:scale-110 transition-transform" />

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AccountSettings } from '../components/AccountSettings';
 import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
@@ -25,8 +25,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/');
+    }
+  }, [currentUser, navigate]);
+
   if (!currentUser) {
-    navigate('/');
     return null;
   }
 
