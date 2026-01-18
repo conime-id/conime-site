@@ -1,5 +1,7 @@
-import React from "react";
 import {NewsItem, CategoryCount} from "./types";
+
+export const DEFAULT_AVATAR = "/icons/avatar-robot.svg";
+export const DEFAULT_THUMBNAIL = "/icons/default.png";
 
 export const TRANSLATIONS = {
   id: {

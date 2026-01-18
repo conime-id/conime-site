@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ArrowRight, History, Flame, Tags, Instagram, Twitter, Facebook, Youtube, Share2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { SOCIAL_LINKS, TRANSLATIONS, getCategoryColor, CATEGORIES, TIKTOK_ICON_SVG } from '../constants';
+import { SOCIAL_LINKS, TRANSLATIONS, getCategoryColor, CATEGORIES, TIKTOK_ICON_SVG, DEFAULT_THUMBNAIL } from '../constants';
 import { NewsItem } from '../types';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
@@ -133,6 +133,10 @@ const Sidebar: React.FC<SidebarProps> = ({ language, onArticleClick, onCategoryC
                   src={item.imageUrl} 
                   alt={getLocalized(item.title, language)} 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = DEFAULT_THUMBNAIL;
+                  }}
                 />
                 <div className="absolute top-0 left-0 w-6 h-6 bg-conime-500 flex items-center justify-center text-[11px] font-black text-white rounded-br-xl shadow-lg">
                   {idx + 1}

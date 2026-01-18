@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Send, Heart, Reply, MoreHorizontal, Flag, Link2, ChevronDown, Trash2, XCircle } from 'lucide-react';
 import { Comment } from '../types';
-import { TRANSLATIONS, SOCIAL_LINKS } from '../constants';
+import { TRANSLATIONS, SOCIAL_LINKS, DEFAULT_AVATAR } from '../constants';
 import { getLocalized } from '../utils/localization';
 import { formatNumber } from '../utils/format';
 import { db } from '../lib/firebase';
@@ -110,7 +110,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               alt={comment.user} 
               className="w-full h-full object-cover" 
               onError={(e) => {
-                (e.target as HTMLImageElement).src = '/icons/avatar-robot.svg';
+                (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
               }} 
             />
           </div>
@@ -221,7 +221,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                   alt={currentUser?.username || 'User'} 
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/icons/avatar-robot.svg';
+                    (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
                   }} 
                 />
               </div>
@@ -452,7 +452,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ articleId, language, 
                 alt={currentUser?.username || 'User'} 
                 className="w-full h-full object-cover" 
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/icons/avatar-robot.svg';
+                  (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
                 }}
               />
             </div>

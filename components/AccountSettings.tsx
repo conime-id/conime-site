@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TRANSLATIONS } from '../constants';
+import { TRANSLATIONS, DEFAULT_AVATAR } from '../constants';
 import { useSearchParams } from 'react-router-dom';
 import { db, auth } from '../lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
@@ -81,7 +81,7 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({
     // Generate avatar if empty
     let avatarToSave = formData.avatar;
     if (!avatarToSave || avatarToSave.trim() === '') {
-      avatarToSave = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.displayName)}&background=random&color=fff&size=200&bold=true&font-size=0.33`;
+      avatarToSave = DEFAULT_AVATAR;
     }
 
     try {

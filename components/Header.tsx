@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Moon, Sun, Bell, Menu, X, Globe, Search, LogOut, Settings, User as UserIcon, ChevronDown, Bookmark, History, Instagram, Facebook, Twitter, Youtube, Mail, Phone, ArrowUp } from 'lucide-react';
-import { LOGO_SVG, LOGO_MARK_SVG, TRANSLATIONS, SOCIAL_LINKS, TIKTOK_ICON_SVG } from '../constants';
+import { LOGO_SVG, LOGO_MARK_SVG, TRANSLATIONS, SOCIAL_LINKS, TIKTOK_ICON_SVG, DEFAULT_AVATAR } from '../constants';
 import { Link, NavLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { getSectionLink } from '../utils/navigation';
 
@@ -288,7 +288,15 @@ export const Header: React.FC<HeaderProps> = ({
                     className="flex items-center gap-2 group"
                   >
                     <div className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-transparent group-hover:border-conime-600 transition-all overflow-hidden shadow-lg">
-                      <img src={currentUser.avatar} alt={currentUser.username} className="w-full h-full object-cover" />
+                      <img 
+                        src={currentUser.avatar || DEFAULT_AVATAR} 
+                        alt={currentUser.username} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = DEFAULT_AVATAR;
+                        }}
+                      />
                     </div>
                     <ChevronDown className={`w-4 h-4 text-cogray-400 group-hover:text-conime-600 transition-all ${isProfileOpen ? 'rotate-180' : ''}`} />
                   </button>
@@ -430,7 +438,15 @@ export const Header: React.FC<HeaderProps> = ({
             {currentUser && (
               <div className="mb-8 p-5 bg-cogray-50 dark:bg-cogray-900 rounded-[32px] flex items-center gap-4 border border-cogray-100 dark:border-cogray-800">
                 <div className="w-14 h-14 rounded-full overflow-hidden shadow-lg border-2 border-white dark:border-cogray-800">
-                  <img src={currentUser.avatar} alt={currentUser.username} className="w-full h-full object-cover" />
+                  <img 
+                    src={currentUser.avatar || DEFAULT_AVATAR} 
+                    alt={currentUser.username} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = DEFAULT_AVATAR;
+                    }}
+                  />
                 </div>
                 <div className="flex-grow min-w-0">
                   <p className="text-base font-black text-cogray-900 dark:text-white uppercase tracking-tighter truncate">{currentUser.username}</p>

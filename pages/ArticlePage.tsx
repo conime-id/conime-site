@@ -28,10 +28,10 @@ interface ErrorBoundaryState {
 }
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
-  constructor(props: any) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
+  state: ErrorBoundaryState = {
+    hasError: false,
+    error: null
+  };
 
   static getDerivedStateFromError(error: any) {
     return { hasError: true, error };
@@ -76,6 +76,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
 }) => {
   const { id, subCategory } = useParams();
   const navigate = useNavigate();
+  const lastAddedId = React.useRef<string | null>(null);
 
   // Log component mount/remount
   useEffect(() => {
@@ -88,35 +89,30 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   const articleId = id || subCategory;
   const article = useMemo(() => {
     const found = articles.find(n => n.id === articleId);
-    console.log("🔍 Article Detection:", {
-      id_param: id,
-      subCategory_param: subCategory,
-      computedId: articleId,
-      found: !!found,
-      articleTitle: found?.title?.id
-    });
     return found;
   }, [articleId, articles]);
 
   // Update Reading History and Document Title
   useEffect(() => {
-    console.log("📖 ArticlePage Rendered for ID:", id);
-    if (article) {
-      addHistory(article);
+    if (article && article.id !== lastAddedId.current) {
+        console.log("📖 ArticlePage Processing ID:", article.id);
+        lastAddedId.current = article.id;
+        
+        addHistory(article);
       
-      const title = getLocalized(article.title, language);
-      const description = getLocalized(article.excerpt, language);
-      const url = `https://conime.id${getArticleLink(article)}`;
-      
-      // Update SEO Meta Tags
-      updateMetaTags(
-        `${title} | CoNime.id`,
-        description,
-        article.imageUrl,
-        url
-      );
+        const title = getLocalized(article.title, language);
+        const description = getLocalized(article.excerpt, language);
+        const url = `https://conime.id${getArticleLink(article)}`;
+        
+        // Update SEO Meta Tags
+        updateMetaTags(
+            `${title} | CoNime.id`,
+            description,
+            article.imageUrl,
+            url
+        );
     }
-  }, [article, language, addHistory, id]);
+  }, [article, language, addHistory]);
 
   if (isLoading) {
     return (

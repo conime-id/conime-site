@@ -1,7 +1,7 @@
 import React from 'react';
 import { Eye, Bookmark } from 'lucide-react';
 import { NewsItem } from '../types';
-import { TRANSLATIONS, getCategoryColor } from '../constants';
+import { TRANSLATIONS, getCategoryColor, DEFAULT_THUMBNAIL } from '../constants';
 import { getLocalized } from '../utils/localization';
 import { useNavigate } from 'react-router-dom';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
@@ -53,7 +53,8 @@ const NewsCard: React.FC<NewsCardProps> = ({
           alt={getLocalized(item.title, language)} 
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = '/icons/default.png';
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = DEFAULT_THUMBNAIL;
           }}
         />
         <div className="absolute top-4 left-4 flex gap-2">

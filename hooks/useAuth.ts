@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth, db } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
@@ -7,8 +7,16 @@ export const useAuth = () => {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const unsubscribeSnapshotRef = React.useRef<(() => void) | null>(null);
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+       // Clean up previous user listener if any
+       if (unsubscribeSnapshotRef.current) {
+         unsubscribeSnapshotRef.current();
+         unsubscribeSnapshotRef.current = null;
+       }
+
       if (firebaseUser) {
         // Create ref to user doc
         const userRef = doc(db, 'users', firebaseUser.uid);
@@ -59,15 +67,20 @@ export const useAuth = () => {
            }
            setLoading(false);
         });
+        
+        // Store unsubscribe function
+        unsubscribeSnapshotRef.current = unsubscribeSnapshot;
 
-        return () => unsubscribeSnapshot();
       } else {
         setUser(null);
         setLoading(false);
       }
     });
 
-    return () => unsubscribeAuth();
+    return () => {
+      if (unsubscribeSnapshotRef.current) unsubscribeSnapshotRef.current();
+      unsubscribeAuth();
+    };
   }, []);
 
   return { user, loading };

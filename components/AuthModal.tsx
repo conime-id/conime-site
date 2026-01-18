@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { TRANSLATIONS } from '../constants';
+import { TRANSLATIONS, DEFAULT_AVATAR } from '../constants';
 import { X, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { auth, googleProvider } from '../lib/firebase';
 import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -96,7 +96,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, language,
         // Update Profile with displayed name
         await updateProfile(user, {
           displayName: username,
-          photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&color=fff&size=200&bold=true&font-size=0.33`
+          photoURL: DEFAULT_AVATAR
         });
 
         const appUser = {
@@ -121,7 +121,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, language,
           username: user.displayName?.toLowerCase().replace(/[^a-z0-9]/g, '') || user.email?.split('@')[0],
           displayName: user.displayName || user.email?.split('@')[0],
           email: user.email,
-          avatar: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email || 'U')}&background=random&color=fff`,
+          avatar: user.photoURL || DEFAULT_AVATAR,
           role: 'user',
           bio: 'CoNime Reader'
         };

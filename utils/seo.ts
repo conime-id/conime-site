@@ -11,7 +11,7 @@ export const updateMetaTags = (
   // Update Title
   document.title = title;
 
-  console.log("SEO UPDATE:", {title, image, url});
+  // console.log("SEO UPDATE:", {title, image, url});
 
   // Update Meta Description
   const metaDesc = document.querySelector('meta[name="description"]');

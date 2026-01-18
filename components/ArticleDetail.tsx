@@ -6,7 +6,7 @@ import {
   Play, Youtube, ZoomIn, ZoomOut, RotateCcw, Move, Check, Video, Flag 
 } from 'lucide-react';
 import { NewsItem } from '../types';
-import { TRANSLATIONS, getCategoryColor } from '../constants';
+import { TRANSLATIONS, getCategoryColor, DEFAULT_THUMBNAIL } from '../constants';
 import Sidebar from './Sidebar';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
@@ -448,7 +448,15 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
 
           <div className="mb-16 space-y-6">
             <div className="relative rounded-[40px] overflow-hidden border border-cogray-100 dark:border-cogray-900 shadow-2xl">
-              <img src={article.imageUrl} alt={getLocalized(article.title, language)} className="w-full h-full object-cover max-h-[850px] min-h-[450px]" />
+              <img 
+                src={article.imageUrl} 
+                alt={getLocalized(article.title, language)} 
+                className="w-full h-full object-cover max-h-[850px] min-h-[450px]" 
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = DEFAULT_THUMBNAIL;
+                }}
+              />
             </div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
               {article.imageCaption && (
@@ -529,7 +537,15 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                              </div>
                            ) : (
                              <div onClick={() => setLightboxIndex(idx)} className="aspect-[4/3] rounded-[32px] overflow-hidden border border-cogray-100 dark:border-cogray-800 shadow-lg bg-cogray-100 dark:bg-cogray-900 cursor-zoom-in relative">
-                                <img src={getThumbnail(img)} alt={img.caption?.[language] || "Gallery item"} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90" />
+                                <img 
+                                  src={getThumbnail(img)} 
+                                  alt={img.caption?.[language] || "Gallery item"} 
+                                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-90" 
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = DEFAULT_THUMBNAIL;
+                                  }}
+                                />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><Zap className="w-8 h-8 text-white animate-pulse" /></div>
                              </div>
                            )}
@@ -565,7 +581,17 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                        </div>
                      ) : (
                        <div className={`relative transition-transform duration-100 ease-out select-none ${zoomLevel > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'}`} style={{ transform: `scale(${zoomLevel}) translate(${panPosition.x / zoomLevel}px, ${panPosition.y / zoomLevel}px)`, touchAction: 'none' }} onMouseDown={zoomLevel > 1 ? handlePanStart : (e) => { if (e.detail === 2) setZoomLevel(1); else if (zoomLevel === 1) handleZoom(0.5); }}>
-                         <img ref={imageRef} src={article.gallery[lightboxIndex].url} alt="Large view" className="max-w-screen max-h-screen object-contain drop-shadow-2xl" draggable={false} />
+                         <img 
+                           ref={imageRef} 
+                           src={article.gallery[lightboxIndex].url} 
+                           alt="Large view" 
+                           className="max-w-screen max-h-screen object-contain drop-shadow-2xl" 
+                           draggable={false} 
+                           onError={(e) => {
+                             e.currentTarget.onerror = null;
+                             e.currentTarget.src = DEFAULT_THUMBNAIL;
+                           }}
+                         />
                        </div>
                      )}
                   </div>
@@ -666,7 +692,17 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {gridRelated.map((rel) => (
               <div key={rel.id} onClick={() => onArticleClick(rel.id)} className="group cursor-pointer">
-                <div className="aspect-[16/10] rounded-3xl overflow-hidden mb-6 border border-cogray-100 dark:border-cogray-800 shadow-lg group-hover:shadow-2xl transition-all relative"><img src={rel.imageUrl} alt={getLocalized(rel.title, language)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" /></div>
+                <div className="aspect-[16/10] rounded-3xl overflow-hidden mb-6 border border-cogray-100 dark:border-cogray-800 shadow-lg group-hover:shadow-2xl transition-all relative">
+                  <img 
+                    src={rel.imageUrl} 
+                    alt={getLocalized(rel.title, language)} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = DEFAULT_THUMBNAIL;
+                    }}
+                  />
+                </div>
                 <div className="mb-3"><button onClick={(e) => { e.stopPropagation(); onCategoryClick(getLocalized(rel.category, 'en')); }} className={`inline-block px-3 py-1 rounded-lg border border-conime-600/30 text-[10px] font-black uppercase tracking-widest text-conime-600 dark:text-conime-500 bg-transparent hover:bg-conime-600 hover:text-white hover:dark:text-white transition-all`}>{getLocalized(rel.category, language)}</button></div>
                 <h3 className="text-base font-black text-cogray-800 dark:text-cogray-100 uppercase leading-snug line-clamp-2 group-hover:text-conime-600 transition-colors tracking-tight">{getLocalized(rel.title, language)}</h3>
               </div>

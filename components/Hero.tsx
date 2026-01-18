@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { TRANSLATIONS, getCategoryColor } from '../constants';
+import { TRANSLATIONS, getCategoryColor, DEFAULT_THUMBNAIL } from '../constants';
 import { getLocalized } from '../utils/localization';
 import { NewsItem } from '../types';
 
@@ -57,6 +57,10 @@ const Hero: React.FC<HeroProps> = ({ language, onArticleClick, onCategoryClick, 
               alt={getLocalized(slide.title, language)} 
               className="w-full h-full object-cover transform transition-transform duration-[8000ms] ease-linear group-hover:scale-110 opacity-90 dark:opacity-100" 
               src={slide.imageUrl}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = DEFAULT_THUMBNAIL;
+              }}
             />
             
             {/* Premium Multi-layer Gradient for Readability */}

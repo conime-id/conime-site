@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TRANSLATIONS, getCategoryColor } from '../constants';
+import { TRANSLATIONS, getCategoryColor, DEFAULT_THUMBNAIL } from '../constants';
 import { getLocalized } from '../utils/localization';
 import { NewsItem } from '../types';
 
@@ -60,6 +60,10 @@ const TrendingSection: React.FC<TrendingSectionProps> = ({ language, onArticleCl
               src={article.image} 
               alt={article.title} 
               className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-1000 opacity-80 dark:opacity-60 group-hover/card:opacity-100 dark:group-hover/card:opacity-90" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = DEFAULT_THUMBNAIL;
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 dark:from-[#0b0b16] dark:via-[#0b0b16]/40 to-transparent"></div>
             
