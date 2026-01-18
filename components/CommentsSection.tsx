@@ -73,7 +73,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 <>
                   <div className="fixed inset-0 z-20" onClick={() => setActiveMenu(null)}></div>
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-cogray-950 border border-cogray-100 dark:border-cogray-800 rounded-2xl shadow-xl z-30 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs font-bold text-cogray-700 dark:text-cogray-300 hover:bg-cogray-50 dark:hover:bg-cogray-900 transition-colors">
+                    <button 
+                      onClick={() => {
+                        const baseUrl = window.location.origin + window.location.pathname;
+                        const commentUrl = `${baseUrl}#comment-${comment.id}`;
+                        navigator.clipboard.writeText(commentUrl);
+                        setActiveMenu(null);
+                        // Optional: show a toast notification here
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs font-bold text-cogray-700 dark:text-cogray-300 hover:bg-cogray-50 dark:hover:bg-cogray-900 transition-colors border-b border-cogray-50 dark:border-cogray-900"
+                    >
                       <Link2 className="w-4 h-4" />
                       <span>{language === 'id' ? 'Salin Tautan' : 'Copy Link'}</span>
                     </button>
@@ -86,7 +95,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
                         <span>{language === 'id' ? 'Hapus Komentar' : 'Delete Comment'}</span>
                       </button>
                     ) : (
-                      <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs font-bold text-cogray-700 dark:text-cogray-300 hover:bg-cogray-50 dark:hover:bg-cogray-900 transition-colors">
+                      <button 
+                        onClick={() => {
+                          window.open(`mailto:report@conime.id?subject=Report Comment: ${comment.user}&body=Reason for reporting comment ID ${comment.id}:`, '_blank');
+                          setActiveMenu(null);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs font-bold text-cogray-700 dark:text-cogray-300 hover:bg-cogray-50 dark:hover:bg-cogray-900 transition-colors"
+                      >
                         <Flag className="w-4 h-4 text-red-500" />
                         <span>{language === 'id' ? 'Laporkan' : 'Report'}</span>
                       </button>
@@ -102,7 +117,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <div className="flex items-center gap-6">
             <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-cogray-400 hover:text-conime-600 transition-colors">
               <Heart className="w-4 h-4" />
-              <span>{comment.likes} {t.likesLabel}</span>
+              <span>{comment.likes}</span><span className="hidden md:inline">{t.likesLabel}</span>
             </button>
             {!isReply && (
               <button 

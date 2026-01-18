@@ -577,11 +577,20 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
              </div>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center justify-between gap-6 py-8 border-b border-cogray-100 dark:border-cogray-900">
-              <div className="flex items-center gap-4">
-                 <button onClick={handleLike} className={`flex items-center gap-3 px-6 md:px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 ${isLiked ? 'bg-conime-500 text-white shadow-conime-500/30 ring-2 ring-conime-500/20' : 'bg-conime-500/10 text-conime-500 hover:bg-conime-500 hover:text-white hover:dark:text-white'}`}><Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} /><span className="hidden md:inline">{t.likeLabel}</span><span>({formatK(likeCount)})</span></button>
-                 <button onClick={() => document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 px-6 md:px-8 py-4 rounded-full bg-cogray-900 text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:bg-cogray-800 active:scale-95"><MessageCircle className="w-4 h-4" /><span className="hidden md:inline">{t.commentLabel}</span><span>(128)</span></button>
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 py-8 border-b border-cogray-100 dark:border-cogray-900">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                 <button onClick={handleLike} className={`flex-1 sm:flex-none flex items-center justify-center gap-3 px-6 md:px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 ${isLiked ? 'bg-conime-500 text-white shadow-conime-500/30 ring-2 ring-conime-500/20' : 'bg-conime-500/10 text-conime-500 hover:bg-conime-500 hover:text-white hover:dark:text-white'}`}>
+                    <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                    <span className="inline">{t.likeLabel}</span>
+                    <span className="opacity-60">({formatK(likeCount)})</span>
+                 </button>
+                 <button onClick={() => document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' })} className={`flex-1 sm:flex-none flex items-center justify-center gap-3 px-6 md:px-8 py-4 rounded-full bg-cogray-900 text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:bg-cogray-800 active:scale-95`}>
+                    <MessageCircle className="w-4 h-4" />
+                    <span className="inline">{t.commentLabel}</span>
+                    <span className="opacity-60">(128)</span>
+                 </button>
               </div>
+
               <div className="flex items-center gap-3">
                  <button onClick={() => setShowShareModal(true)} className="p-4 bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white rounded-2xl transition-colors border border-cogray-800" title={t.shareLabel}><Share2 className="w-5 h-5" /></button>
                  <button onClick={onToggleBookmark} className={`p-4 rounded-2xl transition-all border ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white border-cogray-800'}`} title="Bookmark"><Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} /></button>
