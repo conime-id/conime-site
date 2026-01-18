@@ -59,6 +59,25 @@ const CommentItem: React.FC<CommentItemProps> = ({
     (comment.username === currentUser.username)
   );
 
+  // Helper to generate consistent random background color from string (username)
+  // Excluding brand red/conime colors (approx hue 340-360 & 0-20)
+  const getAvatarColor = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    // Generate HSL
+    // Hue: 0-360. We want to avoid approx 330-360 and 0-15 (Red/Pink range)
+    // Safe ranges: 20-330
+    const hue = Math.abs(hash % 310) + 20; 
+    return `hsl(${hue}, 70%, 85%)`; // Pastel background
+  };
+
+  const avatarBg = React.useMemo(() => {
+     return getAvatarColor(comment.username || 'user');
+  }, [comment.username]);
+
   const timeAgo = (date: any) => {
     if (!date) return '';
     // Handle Firestore Timestamp or serialized object
@@ -81,10 +100,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
     <div id={`comment-${comment.id}`} className={`group flex flex-col gap-6 animate-in fade-in duration-500 ${isReply ? 'ml-10 md:ml-16 mt-6 border-l-2 border-cogray-100 dark:border-cogray-800 pl-6' : ''}`}>
       <div className="scroll-mt-32 flex gap-6">
         <div className="shrink-0">
-          <div className={`${isReply ? 'w-10 h-10' : 'w-14 h-14'} rounded-2xl bg-cogray-100 dark:bg-cogray-900 border border-cogray-200 dark:border-cogray-800 overflow-hidden flex items-center justify-center font-black ${isReply ? 'text-sm' : 'text-xl'} text-cogray-400 group-hover:border-conime-600/30 transition-all`}>
-            {comment.avatar && comment.avatar.length > 2 ? (
-              <img src={comment.avatar} alt={comment.user} className="w-full h-full object-cover" />
-            ) : (comment.user ? comment.user.charAt(0) : 'U')}
+          <div 
+            className={`${isReply ? 'w-10 h-10' : 'w-14 h-14'} rounded-2xl border border-cogray-200 dark:border-cogray-800 overflow-hidden flex items-center justify-center font-black ${isReply ? 'text-sm' : 'text-xl'} text-cogray-400 group-hover:border-conime-600/30 transition-all`}
+            style={{ backgroundColor: comment.avatar ? 'transparent' : avatarBg }}
+          >
+            <img 
+              src={comment.avatar && comment.avatar.length > 2 ? comment.avatar : '/icons/avatar-robot.svg'} 
+              alt={comment.user} 
+              className="w-full h-full object-cover" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/icons/default.png';
+              }} 
+            />
           </div>
         </div>
         <div className="flex-grow">
@@ -186,10 +213,15 @@ const CommentItem: React.FC<CommentItemProps> = ({
         <div className="ml-14 pl-6 border-l-2 border-cogray-100 dark:border-cogray-800 animate-in slide-in-from-top-2 duration-300">
           <form onSubmit={(e) => handleReply(e, comment.id)} className="bg-cogray-50 dark:bg-cogray-900/50 p-4 rounded-2xl border border-cogray-100 dark:border-cogray-800 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-cogray-200 dark:border-cogray-800 flex items-center justify-center bg-conime-600 text-white font-black text-[10px]">
-                {currentUser?.avatar ? (
-                  <img src={currentUser.avatar} alt={currentUser.username} className="w-full h-full object-cover" />
-                ) : 'U'}
+              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-cogray-200 dark:border-cogray-800 flex items-center justify-center bg-cogray-100 dark:bg-cogray-800 text-white font-black text-[10px]">
+                <img 
+                  src={currentUser?.avatar || '/icons/default.png'} 
+                  alt={currentUser?.username || 'User'} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/icons/default.png';
+                  }} 
+                />
               </div>
               <div className="flex-grow relative flex items-center">
                 <input 
@@ -412,9 +444,14 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ articleId, language, 
         <form onSubmit={handleSubmit} className={`space-y-6 transition-all duration-500 ${!currentUser ? 'opacity-20 blur-[1px]' : ''}`}>
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl overflow-hidden bg-conime-600 flex items-center justify-center font-black text-white shrink-0 shadow-lg shadow-conime-600/20">
-              {currentUser?.avatar ? (
-                <img src={currentUser.avatar} alt={currentUser.username} className="w-full h-full object-cover" />
-              ) : <div className="w-full h-full flex items-center justify-center font-black text-xl">U</div>}
+              <img 
+                src={currentUser?.avatar || '/icons/default.png'} 
+                alt={currentUser?.username || 'User'} 
+                className="w-full h-full object-cover" 
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/icons/default.png';
+                }}
+              />
             </div>
             <div className="flex-grow relative">
               <textarea

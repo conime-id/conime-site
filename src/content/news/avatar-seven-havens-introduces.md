@@ -12,7 +12,7 @@ topics:
   - "Avatar: Seven Havens"
   - "Western Animation"
   - "Nickelodeon"
-thumbnail: "/images/uploads/avatar-seven-havens-keyvisual.webp"
+thumbnail: "/images/uploads/avatar-seven-havens-keyvisual.png"
 image_title: "Avatar: Seven Havens – Key Visual"
 image_credit: "Avatar Studios / Nickelodeon"
 image_source_url: "https://ew.com/avatar-seven-havens-first-look-reveals-earthbending-avatar-mentor-11778575"
