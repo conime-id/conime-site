@@ -289,7 +289,7 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     <div className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-transparent group-hover:border-conime-600 transition-all overflow-hidden shadow-lg">
                       <img 
-                        src={currentUser.avatar || DEFAULT_AVATAR} 
+                        src={currentUser.avatar && currentUser.avatar.length > 2 ? currentUser.avatar : DEFAULT_AVATAR} 
                         alt={currentUser.username} 
                         className="w-full h-full object-cover" 
                         onError={(e) => {

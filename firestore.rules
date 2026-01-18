@@ -1,75 +1,43 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper Functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
     
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-    
-    function isAdmin() {
-      // Check if the user document has role == 'admin'
-      // Note: This requires an extra read, which costs money/quota.
-      // Optimally, Custom Claims in Auth Token are better, but Firestore read is easier for now.
-      return isSignedIn() && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    // ARTICLES (Public Read, Admin Write)
+    // Assuming you have an 'articles' collection if you ever sync articles to DB.
+    // If articles are static JSON, this might not be used, but good to have.
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true; 
     }
 
-    // --- Users Collection ---
+    // USERS (Auth Read/Write Own Data)
     match /users/{userId} {
-      allow read: if true; // Public profiles
+      // Allow users to read and write their OWN data
+      allow read, write: if request.auth != null && request.auth.uid == userId;
       
-      // Allow create if auth matches ID and role is 'user' (default)
-      allow create: if isOwner(userId) 
-        && request.resource.data.role == 'user'; // Prevent creating as admin
-      
-      // Allow update if owner, BUT prevents changing the 'role' field
-      allow update: if isOwner(userId) 
-        && request.resource.data.role == resource.data.role; 
-      
-      allow delete: if isOwner(userId) || isAdmin();
+      // Allow anyone to read basic profile info (displayName, avatar) - needed for comments
+      // But we restrict it to just reading specific fields if possible, or just open read.
+      // For simplicity/debugging now: allow public read of users (so we can see avatars in comments)
+      allow read: if true; 
     }
 
-    // --- Comments Collection ---
+    // COMMENTS (Public Read, Auth Write/Delete Own)
     match /comments/{commentId} {
       allow read: if true;
       
-      allow create: if isSignedIn() 
-        && request.resource.data.userId == request.auth.uid;
-        
-      allow update: if (isOwner(resource.data.userId) || isAdmin())
-        // Prevent changing ownership
-        && request.resource.data.userId == resource.data.userId; 
-        
-      allow delete: if isOwner(resource.data.userId) || isAdmin();
+      // Create: Must be logged in, and owner field must match uid
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      // Update/Delete: Must be owner
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
-
-    // --- Articles Collection ---
-    // (Used for Likes & Views counters)
-    match /articles/{articleId} {
-      allow read: if true;
-      
-      // Admins/Editors can do full writes
-      allow create, delete: if isAdmin(); // Add isEditor() if needed
-      
-      // Update logic:
-      // 1. Admin/Editor can update everything.
-      // 2. Public can increment 'views' ONLY.
-      // 3. Authenticated users can increment 'likes' and 'views'.
-      allow update: if isAdmin() 
-        || (
-           // Case A: Updating Views (Allowed for Everyone)
-           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
-        )
-        || (
-           // Case B: Updating Likes (Allowed for Signed In Users)
-           isSignedIn() &&
-           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])
-        );
+    
+    // HISTORY & BOOKMARKS (Often inside /users/{userId} but if subcollections)
+    match /users/{userId}/history/{historyId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId}/bookmarks/{bookmarkId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

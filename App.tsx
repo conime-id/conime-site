@@ -92,9 +92,25 @@ const App: React.FC = () => {
         }
         if (currentUser.history && Array.isArray(currentUser.history)) {
             setHistory(prev => {
-                const prevIds = new Set(prev.map(p => p.id));
-                const newItems = currentUser.history.filter((h: any) => !prevIds.has(h.id));
-                return [...prev, ...newItems].sort((a,b) => b.timestamp - a.timestamp).slice(0, 50);
+                // Merge strategies:
+                // 1. Map existing by ID
+                const historyMap = new Map();
+                prev.forEach(p => historyMap.set(p.id, p));
+                
+                // 2. Add/Update with cloud items (Cloud wins if newer? Or allow duplicates? Usually we merge by ID)
+                currentUser.history.forEach((h: any) => {
+                     const existing = historyMap.get(h.id);
+                     // If existing is newer (local interactive override), maybe keep it? 
+                     // For now, let's just assume latest timestamp wins or overwrite if we want cloud sync.
+                     // Simple merge:
+                     if (!existing || (h.timestamp > (existing.timestamp || 0))) {
+                        historyMap.set(h.id, h);
+                     }
+                });
+
+                // 3. Convert back to array and sort
+                const combined = Array.from(historyMap.values()).sort((a: any, b: any) => (b.timestamp || 0) - (a.timestamp || 0));
+                return combined.slice(0, 50);
             });
         }
     }
