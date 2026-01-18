@@ -257,7 +257,8 @@ export const SOCIAL_LINKS = {
   tiktok: "https://www.tiktok.com/@conime.id",
   whatsapp: "https://wa.me/6285179860291",
   email: "hello@conime.id",
-  emailEditorial: "redaksi@conime.id"
+  emailEditorial: "redaksi@conime.id",
+  emailReport: "report@conime.id"
 };
 
 const DUMMY_CONTENT_ID = `Produksi animasi modern saat ini menuntut standar visual yang semakin tinggi untuk memenuhi ekspektasi audiens global. Dalam perkembangannya, banyak studio mulai mengintegrasikan teknologi CGI secara halus dengan seni tradisional hand-drawn untuk menciptakan kedalaman visual yang optimal.

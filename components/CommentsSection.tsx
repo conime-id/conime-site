@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Send, Heart, Reply, MoreHorizontal, Flag, Link2, ChevronDown, Trash2, XCircle } from 'lucide-react';
 import { Comment } from '../types';
-import { TRANSLATIONS } from '../constants';
+import { TRANSLATIONS, SOCIAL_LINKS } from '../constants';
 import { getLocalized } from '../utils/localization';
+import { formatNumber } from '../utils/format';
 
 interface CommentItemProps {
   comment: Comment;
@@ -45,8 +46,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
   // We'll leave it simple for now to avoid bugs.
   
   return (
-    <div className={`group flex flex-col gap-6 animate-in fade-in duration-500 ${isReply ? 'ml-10 md:ml-16 mt-6 border-l-2 border-cogray-100 dark:border-cogray-800 pl-6' : ''}`}>
-      <div className="flex gap-6">
+    <div id={`comment-${comment.id}`} className={`group flex flex-col gap-6 animate-in fade-in duration-500 ${isReply ? 'ml-10 md:ml-16 mt-6 border-l-2 border-cogray-100 dark:border-cogray-800 pl-6' : ''}`}>
+      <div className="scroll-mt-32 flex gap-6">
         <div className="shrink-0">
           <div className={`${isReply ? 'w-10 h-10' : 'w-14 h-14'} rounded-2xl bg-cogray-100 dark:bg-cogray-900 border border-cogray-200 dark:border-cogray-800 overflow-hidden flex items-center justify-center font-black ${isReply ? 'text-sm' : 'text-xl'} text-cogray-400 group-hover:border-conime-600/30 transition-all`}>
             {comment.avatar.length > 2 ? (
@@ -97,7 +98,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
                     ) : (
                       <button 
                         onClick={() => {
-                          window.open(`mailto:report@conime.id?subject=Report Comment: ${comment.user}&body=Reason for reporting comment ID ${comment.id}:`, '_blank');
+                          const baseUrl = window.location.origin + window.location.pathname;
+                          const commentUrl = `${baseUrl}#comment-${comment.id}`;
+                          window.open(`mailto:${SOCIAL_LINKS.emailReport}?subject=Report Comment: ${comment.user}&body=Comment Link: ${commentUrl}%0D%0A%0D%0AReason for reporting:`, '_blank');
                           setActiveMenu(null);
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs font-bold text-cogray-700 dark:text-cogray-300 hover:bg-cogray-50 dark:hover:bg-cogray-900 transition-colors"
@@ -117,7 +120,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <div className="flex items-center gap-6">
             <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-cogray-400 hover:text-conime-600 transition-colors">
               <Heart className="w-4 h-4" />
-              <span>{comment.likes}</span><span className="hidden md:inline">{t.likesLabel}</span>
+              <span>{formatNumber(comment.likes)}</span><span className="hidden md:inline">{t.likesLabel}</span>
             </button>
             {!isReply && (
               <button 
@@ -339,7 +342,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ language, currentUser
       <div className="flex items-center gap-5 mb-10">
         <div className="w-1.5 h-10 bg-conime-600 rounded-full"></div>
         <h2 className="text-3xl font-black text-cogray-900 dark:text-white uppercase tracking-tighter">
-          {t.commentLabel} ({comments.length + 126})
+          {t.commentLabel} ({formatNumber(comments.length + 126)})
         </h2>
       </div>
 

@@ -10,8 +10,9 @@ import { TRANSLATIONS, getCategoryColor } from '../constants';
 import Sidebar from './Sidebar';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
-import { CATEGORIES } from '../constants'; // Added for category mapping
+import { CATEGORIES, SOCIAL_LINKS } from '../constants'; // Added for category mapping
 import { updateMetaTags, injectJSONLD, generateArticleSchema } from '../utils/seo';
+import { formatNumber } from '../utils/format';
 import CommentsSection from './CommentsSection';
 import ShareModal from './ShareModal';
 
@@ -315,7 +316,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
 
   const handlePanEnd = () => setIsDragging(false);
 
-  const formatK = (num: number) => num >= 1000 ? (num / 1000).toFixed(1) + 'K' : num;
+
 
   const RelatedInline = ({ item, title }: { item: NewsItem, title: string }) => (
     <div onClick={() => onArticleClick(item.id)} className="my-10 p-6 bg-cogray-50 dark:bg-cogray-900/50 border-l-4 border-conime-600 rounded-r-3xl cursor-pointer group hover:bg-cogray-100 dark:hover:bg-cogray-900 transition-all shadow-sm">
@@ -378,7 +379,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                 <div className="h-10 w-[1px] bg-cogray-100 dark:bg-cogray-900 hidden sm:block"></div>
                 <div className="flex items-center gap-6 text-cogray-500">
                   <div className="flex items-center gap-2"><Clock className="w-5 h-5 text-conime-600" /><span className="text-xs font-bold uppercase tracking-widest">{getLocalized(article.date, language)}</span></div>
-                  <div className="flex items-center gap-2"><Eye className="w-5 h-5 text-conime-600" /><span className="text-xs font-bold uppercase tracking-widest">{article.views?.toLocaleString() || 0} {t.viewsLabel}</span></div>
+                  <div className="flex items-center gap-2"><Eye className="w-5 h-5 text-conime-600" /><span className="text-xs font-bold uppercase tracking-widest">{formatNumber(article.views || 0)} {t.viewsLabel}</span></div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -582,7 +583,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                  <button onClick={handleLike} className={`flex-1 sm:flex-none flex items-center justify-center gap-3 px-6 md:px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 ${isLiked ? 'bg-conime-500 text-white shadow-conime-500/30 ring-2 ring-conime-500/20' : 'bg-conime-500/10 text-conime-500 hover:bg-conime-500 hover:text-white hover:dark:text-white'}`}>
                     <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
                     <span className="inline">{t.likeLabel}</span>
-                    <span className="opacity-60">({formatK(likeCount)})</span>
+                    <span className="opacity-60">({formatNumber(likeCount)})</span>
                  </button>
                  <button onClick={() => document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' })} className={`flex-1 sm:flex-none flex items-center justify-center gap-3 px-6 md:px-8 py-4 rounded-full bg-cogray-900 text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:bg-cogray-800 active:scale-95`}>
                     <MessageCircle className="w-4 h-4" />
@@ -594,7 +595,10 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
               <div className="flex items-center gap-3">
                  <button onClick={() => setShowShareModal(true)} className="p-4 bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white rounded-2xl transition-colors border border-cogray-800" title={t.shareLabel}><Share2 className="w-5 h-5" /></button>
                  <button onClick={onToggleBookmark} className={`p-4 rounded-2xl transition-all border ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white border-cogray-800'}`} title="Bookmark"><Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} /></button>
-                 <button onClick={() => window.open(`mailto:report@conime.id?subject=Report: ${article.title}&body=Reason for reporting:`, '_blank')} className="p-4 bg-cogray-900 text-cogray-400 hover:text-red-500 hover:dark:text-red-500 rounded-2xl transition-colors border border-cogray-800" title="Report"><Flag className="w-5 h-5" /></button>
+                 <button onClick={() => {
+                   const articleUrl = window.location.href;
+                   window.open(`mailto:${SOCIAL_LINKS.emailReport}?subject=Report: ${article.title}&body=Link: ${articleUrl}%0D%0A%0D%0AReason for reporting:`, '_blank');
+                 }} className="p-4 bg-cogray-900 text-cogray-400 hover:text-red-500 hover:dark:text-red-500 rounded-2xl transition-colors border border-cogray-800" title="Report"><Flag className="w-5 h-5" /></button>
               </div>
           </div>
         </article>
