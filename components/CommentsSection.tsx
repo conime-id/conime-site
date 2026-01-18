@@ -36,6 +36,22 @@ interface CommentItemProps {
   t: any;
 }
 
+// Helper to generate consistent random background color from string (username)
+// Excluding brand red/conime colors (approx hue 340-360 & 0-20)
+const getAvatarColor = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  // Generate HSL
+  // Hue: 0-360. We want to avoid approx 330-360 and 0-15 (Red/Pink range)
+  // Safe ranges: 20-330
+  const hue = Math.abs(hash % 310) + 20; 
+  // Darker background (L=35%) to make the WHITE robot pop
+  return `hsl(${hue}, 65%, 35%)`;
+};
+
 const CommentItem: React.FC<CommentItemProps> = ({ 
   comment, 
   language, 
@@ -58,22 +74,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
     (comment.userId && currentUser.id && comment.userId === currentUser.id) || 
     (comment.username === currentUser.username)
   );
-
-  // Helper to generate consistent random background color from string (username)
-  // Excluding brand red/conime colors (approx hue 340-360 & 0-20)
-  const getAvatarColor = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    
-    // Generate HSL
-    // Hue: 0-360. We want to avoid approx 330-360 and 0-15 (Red/Pink range)
-    // Safe ranges: 20-330
-    const hue = Math.abs(hash % 310) + 20; 
-    // Darker background (L=35%) to make the WHITE robot pop
-    return `hsl(${hue}, 65%, 35%)`;
-  };
 
   const avatarBg = React.useMemo(() => {
      return getAvatarColor(comment.username || 'user');
@@ -214,9 +214,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
         <div className="ml-14 pl-6 border-l-2 border-cogray-100 dark:border-cogray-800 animate-in slide-in-from-top-2 duration-300">
           <form onSubmit={(e) => handleReply(e, comment.id)} className="bg-cogray-50 dark:bg-cogray-900/50 p-4 rounded-2xl border border-cogray-100 dark:border-cogray-800 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-cogray-200 dark:border-cogray-800 flex items-center justify-center bg-cogray-100 dark:bg-cogray-800 text-white font-black text-[10px]">
+              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-cogray-200 dark:border-cogray-800 flex items-center justify-center bg-cogray-100 dark:bg-cogray-800 text-white font-black text-[10px]"
+                   style={{ backgroundColor: (currentUser?.avatar && currentUser.avatar.length > 2) ? 'transparent' : getAvatarColor(currentUser?.username || 'user') }}>
                 <img 
-                  src={currentUser?.avatar || '/icons/default.png'} 
+                  src={(currentUser?.avatar && currentUser.avatar.length > 2) ? currentUser.avatar : '/icons/avatar-robot.svg'} 
                   alt={currentUser?.username || 'User'} 
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -444,9 +445,10 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ articleId, language, 
         
         <form onSubmit={handleSubmit} className={`space-y-6 transition-all duration-500 ${!currentUser ? 'opacity-20 blur-[1px]' : ''}`}>
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden bg-conime-600 flex items-center justify-center font-black text-white shrink-0 shadow-lg shadow-conime-600/20">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden bg-conime-600 flex items-center justify-center font-black text-white shrink-0 shadow-lg shadow-conime-600/20"
+                 style={{ backgroundColor: (currentUser?.avatar && currentUser.avatar.length > 2) ? 'transparent' : getAvatarColor(currentUser?.username || 'user') }}>
               <img 
-                src={currentUser?.avatar || '/icons/default.png'} 
+                src={(currentUser?.avatar && currentUser.avatar.length > 2) ? currentUser.avatar : '/icons/avatar-robot.svg'} 
                 alt={currentUser?.username || 'User'} 
                 className="w-full h-full object-cover" 
                 onError={(e) => {

@@ -52,6 +52,9 @@ const NewsCard: React.FC<NewsCardProps> = ({
           src={item.imageUrl} 
           alt={getLocalized(item.title, language)} 
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/icons/default.png';
+          }}
         />
         <div className="absolute top-4 left-4 flex gap-2">
           <button 
