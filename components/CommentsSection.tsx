@@ -71,7 +71,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
     // Hue: 0-360. We want to avoid approx 330-360 and 0-15 (Red/Pink range)
     // Safe ranges: 20-330
     const hue = Math.abs(hash % 310) + 20; 
-    return `hsl(${hue}, 70%, 85%)`; // Pastel background
+    // Darker background (L=35%) to make the WHITE robot pop
+    return `hsl(${hue}, 65%, 35%)`;
   };
 
   const avatarBg = React.useMemo(() => {
