@@ -8,10 +8,12 @@
     "build": "vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "deploy:manual": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1",
-   "sync": "powershell -ExecutionPolicy Bypass -File ./sync.ps1",  
-   "preview": "vite preview"
+    "sync": "powershell -ExecutionPolicy Bypass -File ./sync.ps1",
+    "preview": "vite preview"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

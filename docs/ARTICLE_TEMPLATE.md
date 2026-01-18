@@ -3,7 +3,7 @@
 Gunakan format ini jika ingin menulis artikel secara offline di Notepad/VS Code. Simpan file ini dengan ekstensi `.md` di folder `src/content/news/`.
 
 ---
-layout: news
+layout: news ----> ini bisa opinion, reviews tergantung artikel yg saya kirim ya
 title_id: "Judul Artikel Bahasa Indonesia"
 title_en: "English Article Title"
 excerpt_id: "Ringkasan pendek Bahasa Indonesia untuk SEO."
@@ -14,7 +14,7 @@ category: "Anime"
 topics:
   - "One Piece"
   - "Action"
-thumbnail: "/images/uploads/nama-file-gambar.jpg"
+thumbnail: "/images/uploads/nama-file-gambar.jpg" ---> pastikan /images/uploads ya karena itu yg digunakan
 image_title: "Judul Gambar / Alt Text"
 image_credit: "Nama Pemilik Foto (Misal: Netflix)"
 image_source_url: "https://netflix.com"

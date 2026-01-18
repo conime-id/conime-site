@@ -23,6 +23,7 @@ import TermsOfService from "./components/TermsOfService";
 import DMCA from "./components/DMCA";
 import ContactUs from "./components/ContactUs";
 import FAQ from "./components/FAQ";
+import AdminUpload from "./components/AdminUpload";
 
 // Wrapper to pass props to static pages that expect onBack
 const StaticPageWrapper = ({ Component, language, title }: { Component: any, language: string, title: string }) => {
@@ -281,6 +282,7 @@ const App: React.FC = () => {
                 addHistory={addHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
+                isLoading={isContentLoading}
             />} />
 
             <Route path="/news/:id" element={<ArticlePage 
@@ -293,6 +295,7 @@ const App: React.FC = () => {
                 addHistory={addHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
+                isLoading={isContentLoading}
             />} />
 
             <Route path="/opinion/:id" element={<ArticlePage 
@@ -305,6 +308,7 @@ const App: React.FC = () => {
                 addHistory={addHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
+                isLoading={isContentLoading}
             />} />
 
             <Route path="/reviews/:id" element={<ArticlePage 
@@ -317,6 +321,7 @@ const App: React.FC = () => {
                 addHistory={addHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
+                isLoading={isContentLoading}
             />} />
 
             {/* HOME & CATEGORY ROUTES */}
@@ -481,6 +486,10 @@ const App: React.FC = () => {
                 onThemeToggle={toggleTheme}
                 onLanguageToggle={toggleLanguage}
             />} />
+
+            <Route path="/admin/upload" element={<AdminUpload language={language} />} />
+            <Route path="/admin" element={<Navigate to="/admin/upload" replace />} />
+            <Route path="/admin/import" element={<Navigate to="/admin/upload" replace />} />
 
 
 

@@ -37,8 +37,13 @@ function parseMarkdown(content: string): MarkdownContent {
       if (trimLine.startsWith('-')) {
         if (!frontmatter[currentKey]) frontmatter[currentKey] = [];
         
+        const contentAfterDash = trimLine.replace(/^- /, '').trim();
+        const isQuoted = (contentAfterDash.startsWith('"') && contentAfterDash.endsWith('"')) || 
+                         (contentAfterDash.startsWith("'") && contentAfterDash.endsWith("'"));
+
         // Is it a simple string list or an object list?
-        if (trimLine.includes(':')) {
+        // If it's quoted, treat as string regardless of colons
+        if (trimLine.includes(':') && !isQuoted) {
           // It's likely an object list item (e.g., gallery)
           // Look ahead to collect fields for this object
           const obj: any = {};
@@ -60,7 +65,7 @@ function parseMarkdown(content: string): MarkdownContent {
           i = j - 1;
         } else {
           // Simple string list item (e.g., topics)
-          frontmatter[currentKey].push(trimLine.replace(/^- /, '').replace(/^["'](.*)["']$/, '$1'));
+          frontmatter[currentKey].push(contentAfterDash.replace(/^["'](.*)["']$/, '$1'));
         }
         continue;
       }
