@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft, Share2, MessageCircle, Heart, Eye, Clock, Bookmark, ArrowRight, Camera, 
   Link as LinkIcon, Instagram, Twitter, Zap, Image as ImageIcon, X, ChevronLeft, ChevronRight, 
-  Play, Youtube, ZoomIn, ZoomOut, RotateCcw, Move, Check 
+  Play, Youtube, ZoomIn, ZoomOut, RotateCcw, Move, Check, Video, Flag 
 } from 'lucide-react';
 import { NewsItem } from '../types';
 import { TRANSLATIONS, getCategoryColor } from '../constants';
@@ -89,27 +89,48 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
         // Clean up previous artifacts if any
         .replace(/<\/blockquote>\s*<br\/>/g, '</blockquote>')
         
+        // Helper for raw HTML protection if needed, currently we trust the input as it is admin content locally.
+        
         // Handle Blockquotes with multi-line support
-        // We look for blocks of lines that start with >
-        // Using a function to process the content inside
-        .replace(/((?:^> .*(\n|$))+)/gm, (match) => {
-            // Remove the > from each line
-            const content = match.replace(/^> ?/gm, '').trim().replace(/\n/g, '<br/>');
-            return `<blockquote class="my-6 pl-6 border-l-4 border-conime-600 italic text-xl font-medium text-cogray-900 dark:text-white">${content}</blockquote>`;
+        // Regex: Matches one or more lines starting with > (optional space), handling CRLF
+        .replace(/((?:^>\s?.*(?:\r?\n|$))+)/gm, (match) => {
+            // Remove the > markers
+            let contentLines = match.split(/\r?\n/).map(line => line.replace(/^>\s?/, '').trim()).filter(l => l);
+            
+            // Check if last line looks like a citation (-- Author or — Author)
+            let citation = '';
+            const lastLine = contentLines[contentLines.length - 1];
+            if (lastLine && (lastLine.startsWith('--') || lastLine.startsWith('—') || lastLine.startsWith('- '))) {
+                 citation = lastLine.replace(/^(--|—|-\s)/, '').trim();
+                 contentLines.pop(); // Remove it from main content
+            }
+            
+            const contentHtml = contentLines.join('<br/>');
+            
+            return `
+              <blockquote class="my-8 relative pl-6 border-l-4 border-conime-600/50 bg-cogray-50/50 dark:bg-cogray-900/20 py-4 pr-4 rounded-r-2xl">
+                <p class="italic text-xl font-medium text-cogray-900 dark:text-white leading-relaxed">${contentHtml}</p>
+                ${citation ? `<footer class="mt-3 text-sm font-black text-conime-600 uppercase tracking-widest pl-2">— ${citation}</footer>` : ''}
+              </blockquote>
+            `;
         })
 
-        // Headers (allow loose spacing)
-        .replace(/^##\s?(.*?)$/gm, '<h2>$1</h2>') // ## Title
-        .replace(/^###\s?(.*?)$/gm, '<h3>$1</h3>') // ### Title
+        // Headers
+        .replace(/^#\s+(.*?)$/gm, '<h1 class="text-3xl md:text-4xl font-black mt-12 mb-6 uppercase tracking-tight text-cogray-900 dark:text-white">$1</h1>')
+        .replace(/^##\s+(.*?)$/gm, '<h2 class="text-2xl md:text-3xl font-black mt-10 mb-5 uppercase tracking-tight text-cogray-900 dark:text-white">$1</h2>')
+        .replace(/^###\s+(.*?)$/gm, '<h3 class="text-xl md:text-2xl font-black mt-8 mb-4 uppercase tracking-tight text-cogray-900 dark:text-white">$1</h3>')
+        .replace(/^####\s+(.*?)$/gm, '<h4 class="text-lg md:text-xl font-black mt-6 mb-3 uppercase tracking-tight text-cogray-900 dark:text-white">$1</h4>')
         
         // Bold: **text**
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>')
         // Italics: *text* or _text_
-        .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
-        // Links: [text](url)
-        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-conime-600 hover:underline" target="_blank">$1</a>')
+        .replace(/(\*|_)(.*?)\1/g, '<em class="italic">$2</em>')
+        // Links: [text](url) - Add target blank
+        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-conime-600 font-bold hover:underline decoration-2 underline-offset-4" target="_blank" rel="noopener noreferrer">$1</a>')
         // Lists: - item
-        .replace(/^- (.*)$/gm, '<li>$1</li>');
+        .replace(/^- (.*)$/gm, '<li class="ml-4 list-disc pl-2 marker:text-conime-600">$1</li>');
+        
+      return processed;
     } catch (e) {
       return text;
     }
@@ -395,6 +416,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                   </div>
                   {article.videoSource && (
                     <div className="flex items-center gap-2 bg-cogray-50 dark:bg-cogray-900 px-3 py-1.5 rounded-xl border border-cogray-100 dark:border-cogray-800 self-start md:self-auto">
+                      <Video className="w-3 h-3 text-conime-600" />
                       <span className="text-[9px] font-black text-cogray-400 dark:text-cogray-600 uppercase tracking-tighter">{t.videoSourceLabel}: <a href={article.videoSourceUrl || "#"} target="_blank" rel="noopener noreferrer" className="hover:text-conime-600 transition-colors">{article.videoSource}</a></span>
                     </div>
                   )}
@@ -462,7 +484,10 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                                 </div>
                               )}
                               {(img.source || article.imageSource) && (
-                                <div className="flex items-center gap-2"><Camera className="w-3 h-3 text-conime-600/50" /><span className="text-[9px] font-black text-cogray-400 dark:text-cogray-700 uppercase tracking-tighter">{img.videoUrl ? t.videoSourceLabel : t.imageSourceLabel}: <span className="source-link uppercase">{img.source || article.imageSource}</span></span></div>
+                                <div className="flex items-center gap-2">
+                                  {img.videoUrl ? <Video className="w-3 h-3 text-conime-600/50" /> : <Camera className="w-3 h-3 text-conime-600/50" />}
+                                  <span className="text-[9px] font-black text-cogray-400 dark:text-cogray-700 uppercase tracking-tighter">{img.videoUrl ? t.videoSourceLabel : t.imageSourceLabel}: <span className="source-link uppercase">{img.source || article.imageSource}</span></span>
+                                </div>
                               )}
                            </div>
                         </div>
@@ -553,14 +578,15 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
           </div>
 
           <div className="mt-12 flex flex-wrap items-center justify-between gap-6 py-8 border-b border-cogray-100 dark:border-cogray-900">
-             <div className="flex items-center gap-4">
-                <button onClick={handleLike} className={`flex items-center gap-3 px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 ${isLiked ? 'bg-conime-500 text-white shadow-conime-500/30 ring-2 ring-conime-500/20' : 'bg-conime-500/10 text-conime-500 hover:bg-conime-500 hover:text-white hover:dark:text-white'}`}><Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} /><span>{t.likeLabel} ({formatK(likeCount)})</span></button>
-                <button onClick={() => document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 px-8 py-4 rounded-full bg-cogray-900 text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:bg-cogray-800 active:scale-95"><MessageCircle className="w-4 h-4" /><span>{t.commentLabel} (128)</span></button>
-             </div>
-             <div className="flex items-center gap-3">
-                <button onClick={() => setShowShareModal(true)} className="p-4 bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white rounded-2xl transition-colors border border-cogray-800"><Share2 className="w-5 h-5" /></button>
-                <button onClick={onToggleBookmark} className={`p-4 rounded-2xl transition-all border ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white border-cogray-800'}`}><Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} /></button>
-             </div>
+              <div className="flex items-center gap-4">
+                 <button onClick={handleLike} className={`flex items-center gap-3 px-6 md:px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 ${isLiked ? 'bg-conime-500 text-white shadow-conime-500/30 ring-2 ring-conime-500/20' : 'bg-conime-500/10 text-conime-500 hover:bg-conime-500 hover:text-white hover:dark:text-white'}`}><Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} /><span className="hidden md:inline">{t.likeLabel}</span><span>({formatK(likeCount)})</span></button>
+                 <button onClick={() => document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 px-6 md:px-8 py-4 rounded-full bg-cogray-900 text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:bg-cogray-800 active:scale-95"><MessageCircle className="w-4 h-4" /><span className="hidden md:inline">{t.commentLabel}</span><span>(128)</span></button>
+              </div>
+              <div className="flex items-center gap-3">
+                 <button onClick={() => setShowShareModal(true)} className="p-4 bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white rounded-2xl transition-colors border border-cogray-800" title={t.shareLabel}><Share2 className="w-5 h-5" /></button>
+                 <button onClick={onToggleBookmark} className={`p-4 rounded-2xl transition-all border ${isBookmarked ? 'bg-conime-500/10 text-conime-500 border-conime-500/20' : 'bg-cogray-900 text-cogray-400 hover:text-white hover:dark:text-white border-cogray-800'}`} title="Bookmark"><Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} /></button>
+                 <button onClick={() => window.open(`mailto:report@conime.id?subject=Report: ${article.title}&body=Reason for reporting:`, '_blank')} className="p-4 bg-cogray-900 text-cogray-400 hover:text-red-500 hover:dark:text-red-500 rounded-2xl transition-colors border border-cogray-800" title="Report"><Flag className="w-5 h-5" /></button>
+              </div>
           </div>
         </article>
 

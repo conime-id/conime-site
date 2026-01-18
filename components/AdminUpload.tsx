@@ -28,16 +28,18 @@ const AdminUpload: React.FC<AdminUploadProps> = ({ language }) => {
 
   const parseMD = (text: string) => {
     try {
-      const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---/;
+      // Relaxed regex to handle whitespace/newlines better
+      // Matches ---, any content, ---, optionally surrounded by whitespace
+      const frontmatterRegex = /^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*/;
       const match = text.match(frontmatterRegex);
       
-      if (!match) throw new Error('Invalid frontmatter format. Ensure it starts and ends with --- on new lines.');
+      if (!match) throw new Error('Invalid frontmatter format. Ensure it starts and ends with ---');
       
       const yamlBlock = match[1];
       const body = text.replace(frontmatterRegex, '').trim();
       
       const meta: any = {};
-      yamlBlock.split('\n').forEach(line => {
+      yamlBlock.split('\n').filter(line => line.trim()).forEach(line => {
         const idx = line.indexOf(':');
         if (idx !== -1) {
           const key = line.substring(0, idx).trim();

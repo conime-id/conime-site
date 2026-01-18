@@ -13,7 +13,8 @@ export interface MarkdownContent {
  * Note: This is an improved parser that handles simple objects and lists for topics/gallery.
  */
 function parseMarkdown(content: string): MarkdownContent {
-  const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---/;
+  // Relaxed regex to allow trailing spaces and varying newline formats
+  const frontmatterRegex = /^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*/;
   const match = content.match(frontmatterRegex);
   
   const frontmatter: Record<string, any> = {};

@@ -110,7 +110,7 @@ New elements introduced in the series include:
 The story explores themes of identity, responsibility, and rebuilding a fractured world, focusing on the emotional weight carried by the Avatar in a time of deep uncertainty.
 
 > A darker, post-apocalyptic take on the Avatar legacy. 
-> — Vulture
+> — Vulture 
 
 ### Release Window
 
