@@ -124,5 +124,4 @@ This consistency is expected to maintain the series’ established visual qualit
 ### Release Window
 
 **Oshi no Ko Season 3** is set to air in **January 2026** as part of the **Winter 2026 anime season**, with additional details to be announced at a later date.
-
----- 
+ 
