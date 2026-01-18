@@ -110,7 +110,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               alt={comment.user} 
               className="w-full h-full object-cover" 
               onError={(e) => {
-                (e.target as HTMLImageElement).src = '/icons/default.png';
+                (e.target as HTMLImageElement).src = '/icons/avatar-robot.svg';
               }} 
             />
           </div>
@@ -221,7 +221,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                   alt={currentUser?.username || 'User'} 
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/icons/default.png';
+                    (e.target as HTMLImageElement).src = '/icons/avatar-robot.svg';
                   }} 
                 />
               </div>
@@ -452,7 +452,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ articleId, language, 
                 alt={currentUser?.username || 'User'} 
                 className="w-full h-full object-cover" 
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/icons/default.png';
+                  (e.target as HTMLImageElement).src = '/icons/avatar-robot.svg';
                 }}
               />
             </div>

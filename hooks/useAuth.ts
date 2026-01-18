@@ -25,7 +25,7 @@ export const useAuth = () => {
                ...userData,
                // Normalize for app types
                username: userData.username || firebaseUser.displayName?.replace(/\s+/g, '').toLowerCase() || 'user',
-               avatar: userData.avatar || firebaseUser.photoURL || 'U',
+               avatar: userData.avatar || firebaseUser.photoURL || '/icons/avatar-robot.svg',
                role: userData.role || 'user',
                bookmarks: userData.bookmarks || [],
                history: userData.history || []
@@ -37,7 +37,8 @@ export const useAuth = () => {
                email: firebaseUser.email,
                displayName: firebaseUser.displayName,
                username: firebaseUser.displayName?.replace(/\s+/g, '').toLowerCase() || 'user',
-               avatar: firebaseUser.photoURL || 'U',
+               // Prefer Auth Photo (Google), else Robot
+               avatar: firebaseUser.photoURL || '/icons/avatar-robot.svg',
                role: 'user',
                bookmarks: [],
                history: []

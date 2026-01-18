@@ -16,13 +16,18 @@ interface ArticlePageProps {
   toggleBookmark: (id: string) => void;
   currentUser: any;
   onLoginClick: () => void;
-  addHistory: (id: string) => void;
+  addHistory: (article: NewsItem) => void;
   articles: NewsItem[];
   isLoading?: boolean;
 }
 
 
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: any }> {
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: any;
+}
+
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
   constructor(props: any) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -97,7 +102,7 @@ export const ArticlePage: React.FC<ArticlePageProps> = ({
   useEffect(() => {
     console.log("📖 ArticlePage Rendered for ID:", id);
     if (article) {
-      addHistory(article.id);
+      addHistory(article);
       
       const title = getLocalized(article.title, language);
       const description = getLocalized(article.excerpt, language);

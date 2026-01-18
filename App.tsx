@@ -232,21 +232,22 @@ const App: React.FC = () => {
       }
   };
 
-  const handleAddHistory = async (article: any) => {
+  const handleAddHistory = useCallback(async (article: any) => {
     // Optimistic Update
     const newItem = {
       id: article.id,
-      title: article.title,
-      category: article.category,
-      imageUrl: article.imageUrl,
-      date: article.date,
+      title: article.title || { en: '', id: '' },
+      category: article.category || '',
+      imageUrl: article.imageUrl || '',
+      date: article.date || new Date().toISOString(),
       timestamp: Date.now()
     };
     
     // Remove if exists then add to top
-    const filtered = history.filter((h: any) => h.id !== article.id);
-    const newHistory = [newItem, ...filtered].slice(0, 50); // Keep last 50
-    setHistory(newHistory);
+    setHistory(prevHistory => {
+        const filtered = prevHistory.filter((h: any) => h.id !== article.id);
+        return [newItem, ...filtered].slice(0, 50); // Keep last 50
+    });
 
     // Increment Views (Local + Firestore is already handled in ArticlePage)
     setViewCounts(prev => ({
@@ -258,12 +259,19 @@ const App: React.FC = () => {
      if (currentUser) {
          const userRef = doc(db, 'users', currentUser.id);
          try {
-            await setDoc(userRef, { history: newHistory }, { merge: true });
+             // Note: We need the NEW history here. 
+             // Ideally we calculate it first.
+             // But inside setHistory updater we can't side effect easily.
+             // We'll approximate:
+             const currentHistory = history.filter((h: any) => h.id !== article.id);
+             const newHistoryForStore = [newItem, ...currentHistory].slice(0, 50);
+             
+             await setDoc(userRef, { history: newHistoryForStore }, { merge: true });
          } catch(err) {
             console.error("Error syncing history:", err);
          }
      }
-  };
+  }, [history, currentUser]);
 
   const addSearchHistory = useCallback((query: string) => {
     if (!query.trim()) return;
