@@ -1,12 +1,12 @@
 ---
 layout: news
-title_id: "Hunter: Ini Contoh hahahhaSeven Havens Perkenalkan Hunter Bumi Baru Pasca Era Korra"
+title_id: " "
 title_en: "Hunter: This is example hahaha Seven Havens Introduces a New Earth Hunter After the Korra Era"
 excerpt_id: "Hunter: Seven Havens diumumkan sebagai seri lanjutan dunia Hunter setelah The Legend of Korra. Serial ini menghadirkan Hunter Bumi baru dalam dunia pasca-bencana dan dijadwalkan tayang sekitar tahun 2027."
 excerpt_en: "Hunter: Seven Havens is officially announced as a new series set after The Legend of Korra, featuring a new Earth Hunter in a post-cataclysm world, with a planned release around 2027."
-author: "Koni"
-date: 2025-07-28T14:00:00Z
-category: "Anime"
+author: " "
+date:  
+category: " "
 topics:
   - "Hunter"
   - "Hunter: Seven Havens"
