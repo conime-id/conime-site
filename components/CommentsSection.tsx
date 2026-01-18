@@ -109,9 +109,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
               src={comment.avatar && comment.avatar.length > 2 ? comment.avatar : '/icons/avatar-robot.svg'} 
               alt={comment.user} 
               className="w-full h-full object-cover" 
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
-              }} 
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  if (e.currentTarget.src !== window.location.origin + DEFAULT_AVATAR && !e.currentTarget.src.endsWith(DEFAULT_AVATAR)) {
+                    (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
+                  }
+                }} 
             />
           </div>
         </div>

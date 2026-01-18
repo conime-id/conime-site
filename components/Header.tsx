@@ -294,7 +294,9 @@ export const Header: React.FC<HeaderProps> = ({
                         className="w-full h-full object-cover" 
                         onError={(e) => {
                           e.currentTarget.onerror = null;
-                          e.currentTarget.src = DEFAULT_AVATAR;
+                          if (e.currentTarget.src !== window.location.origin + DEFAULT_AVATAR && !e.currentTarget.src.endsWith(DEFAULT_AVATAR)) {
+                            e.currentTarget.src = DEFAULT_AVATAR;
+                          }
                         }}
                       />
                     </div>

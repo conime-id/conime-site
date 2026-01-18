@@ -74,7 +74,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
         
         {/* Bookmark Button */}
         <button 
-          onClick={(e) => { e.stopPropagation(); if(onToggleBookmark) onToggleBookmark(item.id); }}
+          onClick={(e) => { e.stopPropagation(); if(onToggleBookmark) onToggleBookmark(e); }}
           className={`absolute top-4 right-4 p-2 rounded-xl backdrop-blur-md transition-all z-10 ${
             isBookmarked 
               ? 'bg-conime-600 text-white shadow-lg shadow-conime-600/20' 

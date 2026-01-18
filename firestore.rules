@@ -2,26 +2,37 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // ARTICLES (Public Read, Admin Write)
-    // Assuming you have an 'articles' collection if you ever sync articles to DB.
-    // If articles are static JSON, this might not be used, but good to have.
+    // ARTICLES
     match /articles/{articleId} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.admin == true; 
-    }
-
-    // USERS (Auth Read/Write Own Data)
-    match /users/{userId} {
-      // Allow users to read and write their OWN data
-      allow read, write: if request.auth != null && request.auth.uid == userId;
       
-      // Allow anyone to read basic profile info (displayName, avatar) - needed for comments
-      // But we restrict it to just reading specific fields if possible, or just open read.
-      // For simplicity/debugging now: allow public read of users (so we can see avatars in comments)
-      allow read: if true; 
+      // Allow create/delete only for admins
+      allow create, delete: if request.auth != null && request.auth.token.admin == true;
+
+      // UPDATE RULES:
+      // 1. Admin can update anything.
+      // 2. Public (Guest) can ONLY increment views.
+      // 3. Authenticated User can ONLY increment likes (views are handled by public rule, but separate is cleaner).
+      allow update: if 
+        (request.auth != null && request.auth.token.admin == true) ||
+        (
+          // Public: Allow update if ONLY 'views' changed
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['views'])
+        ) ||
+        (
+          // Authenticated: Allow update if ONLY 'likes' changed
+          request.auth != null &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['likes'])
+        );
     }
 
-    // COMMENTS (Public Read, Auth Write/Delete Own)
+    // USERS
+    match /users/{userId} {
+      // Allow users to read and write ONLY their OWN data
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // COMMENTS
     match /comments/{commentId} {
       allow read: if true;
       
@@ -30,14 +41,6 @@ service cloud.firestore {
       
       // Update/Delete: Must be owner
       allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
-    }
-    
-    // HISTORY & BOOKMARKS (Often inside /users/{userId} but if subcollections)
-    match /users/{userId}/history/{historyId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    match /users/{userId}/bookmarks/{bookmarkId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

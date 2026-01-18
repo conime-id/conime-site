@@ -454,7 +454,9 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                 className="w-full h-full object-cover max-h-[850px] min-h-[450px]" 
                 onError={(e) => {
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = DEFAULT_THUMBNAIL;
+                  if (e.currentTarget.src !== window.location.origin + DEFAULT_THUMBNAIL && !e.currentTarget.src.endsWith(DEFAULT_THUMBNAIL)) {
+                      e.currentTarget.src = DEFAULT_THUMBNAIL;
+                  }
                 }}
               />
             </div>
