@@ -14,6 +14,10 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { NotFound } from "./pages/NotFound";
 import { getAllArticles } from "./utils/contentLoader";
 import { NewsItem } from "./types";
+import { useAuth } from "./hooks/useAuth";
+import { auth, db } from "./lib/firebase";
+import { signOut } from "firebase/auth";
+import { doc, setDoc, query, collection, onSnapshot } from "firebase/firestore";
 
 // Static Components (Wrapped for Routes)
 import AboutUs from "./components/AboutUs";
@@ -72,16 +76,30 @@ const App: React.FC = () => {
   });
 
   // Authentication State
-  const [currentUser, setCurrentUser] = useState<any>(() => {
-    const saved = localStorage.getItem("conime_user");
-    if (saved) {
-      const user = JSON.parse(saved);
-      if (!user.displayName) user.displayName = user.username;
-      return user;
-    }
-    return null;
-  });
+  // Authentication State
+  // Authentication State
+  const { user: currentUser } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Sync Cloud Data to Local State on Login
+  useEffect(() => {
+    if (currentUser) {
+        if (currentUser.bookmarks && Array.isArray(currentUser.bookmarks)) {
+            setBookmarks(prev => {
+                const combined = [...new Set([...prev, ...currentUser.bookmarks])];
+                return combined;
+            });
+        }
+        if (currentUser.history && Array.isArray(currentUser.history)) {
+            setHistory(prev => {
+                const prevIds = new Set(prev.map(p => p.id));
+                const newItems = currentUser.history.filter((h: any) => !prevIds.has(h.id));
+                return [...prev, ...newItems].sort((a,b) => b.timestamp - a.timestamp).slice(0, 50);
+            });
+        }
+    }
+  }, [currentUser]);
+
 
   // --- Dynamic Content State ---
   const [articles, setArticles] = useState<NewsItem[]>([]);
@@ -92,6 +110,22 @@ const App: React.FC = () => {
       try {
         const data = await getAllArticles();
         setArticles(data);
+        
+        // Listen to Firestore for view count updates
+        const q = query(collection(db, "articles"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const viewsMap = new Map();
+            snapshot.docs.forEach(doc => {
+                 viewsMap.set(doc.id, doc.data().views || 0);
+            });
+            
+            setArticles(prevArticles => prevArticles.map(article => ({
+                ...article,
+                views: viewsMap.get(article.id) || article.views || 0
+            })));
+        });
+        
+        return () => unsubscribe();
       } catch (error) {
         console.error("Failed to load CMS content:", error);
       } finally {
@@ -171,24 +205,65 @@ const App: React.FC = () => {
     setLanguage(prev => prev === 'id' ? 'en' : 'id');
   }, []);
 
-  const toggleBookmark = useCallback((id: string) => {
-    setBookmarks(prev => {
-      const isAlready = prev.includes(id);
-      const newBookmarks = isAlready 
-        ? prev.filter(b => b !== id) 
-        : [id, ...prev];
-      return newBookmarks;
-    });
-  }, []);
+  // Actions
+  const handleToggleBookmark = async (id: string, e?: React.MouseEvent) => {
+      if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+      }
+      
+      let newBookmarks: string[];
+      if (bookmarks.includes(id)) {
+        newBookmarks = bookmarks.filter(b => b !== id);
+      } else {
+        newBookmarks = [id, ...bookmarks];
+      }
+      
+      setBookmarks(newBookmarks);
 
-  const addHistory = useCallback((article: any) => {
-    setHistory(prev => {
-      // Find if already exists and move to top
-      const articleId = typeof article === 'string' ? article : article.id;
-      const filtered = prev.filter(item => (typeof item === 'string' ? item : item.id) !== articleId);
-      return [article, ...filtered].slice(0, 10);
-    });
-  }, []);
+      // Firestore sync if logged in
+      if (currentUser) {
+          const userRef = doc(db, 'users', currentUser.id);
+          try {
+             await setDoc(userRef, { bookmarks: newBookmarks }, { merge: true });
+          } catch(err) {
+             console.error("Error syncing bookmarks:", err);
+          }
+      }
+  };
+
+  const handleAddHistory = async (article: any) => {
+    // Optimistic Update
+    const newItem = {
+      id: article.id,
+      title: article.title,
+      category: article.category,
+      imageUrl: article.imageUrl,
+      date: article.date,
+      timestamp: Date.now()
+    };
+    
+    // Remove if exists then add to top
+    const filtered = history.filter((h: any) => h.id !== article.id);
+    const newHistory = [newItem, ...filtered].slice(0, 50); // Keep last 50
+    setHistory(newHistory);
+
+    // Increment Views (Local + Firestore is already handled in ArticlePage)
+    setViewCounts(prev => ({
+        ...prev,
+        [article.id]: (prev[article.id] || 0) + 1
+    }));
+
+     // Firestore sync if logged in
+     if (currentUser) {
+         const userRef = doc(db, 'users', currentUser.id);
+         try {
+            await setDoc(userRef, { history: newHistory }, { merge: true });
+         } catch(err) {
+            console.error("Error syncing history:", err);
+         }
+     }
+  };
 
   const addSearchHistory = useCallback((query: string) => {
     if (!query.trim()) return;
@@ -212,26 +287,30 @@ const App: React.FC = () => {
     navigate(getSectionLink(nav, isHeader));
   }, [searchParams, addSearchHistory, navigate]);
 
-  const handleLogout = useCallback(() => {
-    setCurrentUser(null);
-    localStorage.removeItem("conime_user");
-    navigate("/");
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   }, [navigate]);
 
   const handleLogin = useCallback((user: any) => {
-    setCurrentUser(user);
-    localStorage.setItem("conime_user", JSON.stringify(user));
+    // User login is handled by Firebase Auth listener in useAuth
+    // Just close the modal
     setIsAuthModalOpen(false);
   }, []);
 
   const handleUpdateUser = useCallback((updated: any) => {
-    setCurrentUser(updated);
-    localStorage.setItem("conime_user", JSON.stringify(updated));
+    // User updates are handled by Firestore listener in useAuth
+    // No local state update needed here
   }, []);
 
-  const handleDeleteUser = useCallback(() => {
-    setCurrentUser(null);
-    localStorage.removeItem("conime_user");
+  const handleDeleteUser = useCallback(async () => {
+    // Account deletion should be handled by component logic (AccountSettings)
+    // Here we just sign out
+    await signOut(auth);
     navigate("/");
   }, [navigate]);
 
@@ -278,8 +357,8 @@ const App: React.FC = () => {
                 articles={articles}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
-                addHistory={addHistory}
+                toggleBookmark={handleToggleBookmark}
+                addHistory={handleAddHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
                 isLoading={isContentLoading}
@@ -291,8 +370,8 @@ const App: React.FC = () => {
                 articles={articles}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
-                addHistory={addHistory}
+                toggleBookmark={handleToggleBookmark}
+                addHistory={handleAddHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
                 isLoading={isContentLoading}
@@ -304,8 +383,8 @@ const App: React.FC = () => {
                 articles={articles}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
-                addHistory={addHistory}
+                toggleBookmark={handleToggleBookmark}
+                addHistory={handleAddHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
                 isLoading={isContentLoading}
@@ -317,8 +396,8 @@ const App: React.FC = () => {
                 articles={articles}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
-                addHistory={addHistory}
+                toggleBookmark={handleToggleBookmark}
+                addHistory={handleAddHistory}
                 currentUser={currentUser}
                 onLoginClick={() => setIsAuthModalOpen(true)}
                 isLoading={isContentLoading}
@@ -334,7 +413,7 @@ const App: React.FC = () => {
                 activeNav="home"
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -348,7 +427,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -363,7 +442,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -378,7 +457,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -393,7 +472,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -408,7 +487,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -422,7 +501,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -436,7 +515,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -458,7 +537,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />
@@ -472,7 +551,7 @@ const App: React.FC = () => {
                 isLoadingContent={isContentLoading}
                 history={history}
                 bookmarks={bookmarks}
-                toggleBookmark={toggleBookmark}
+                toggleBookmark={handleToggleBookmark}
                 viewCounts={viewCounts}
                 onSaveSearch={addSearchHistory}
             />} />

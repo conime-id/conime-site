@@ -83,6 +83,7 @@ export interface Comment {
   };
   likes: number;
   replies?: Comment[];
+  userId?: string;
 }
 
 export interface User {

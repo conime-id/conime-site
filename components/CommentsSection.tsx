@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, Heart, Reply, MoreHorizontal, Flag, Link2, ChevronDown, Trash2, XCircle } from 'lucide-react';
 import { Comment } from '../types';
 import { TRANSLATIONS, SOCIAL_LINKS } from '../constants';
 import { getLocalized } from '../utils/localization';
 import { formatNumber } from '../utils/format';
+import { db } from '../lib/firebase';
+import { 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  orderBy, 
+  onSnapshot, 
+  deleteDoc, 
+  doc, 
+  serverTimestamp,
+  updateDoc,
+  increment
+} from 'firebase/firestore';
 
 interface CommentItemProps {
   comment: Comment;
@@ -17,7 +31,7 @@ interface CommentItemProps {
   setReplyingTo: (id: string | null) => void;
   replyText: string;
   setReplyText: (text: string) => void;
-  handleReply: (e: React.FormEvent) => void;
+  handleReply: (e: React.FormEvent, parentId: string) => void;
   handleDelete: (commentId: string) => void;
   t: any;
 }
@@ -38,21 +52,39 @@ const CommentItem: React.FC<CommentItemProps> = ({
   handleDelete,
   t
 }) => {
-  const [showReplies, setShowReplies] = useState(false);
-  const isOwner = currentUser && comment.username === currentUser.username;
+  const [showReplies, setShowReplies] = useState(true);
+  // Check ownership: match by userId if available, fallback to username
+  const isOwner = currentUser && (
+    (comment.userId && currentUser.id && comment.userId === currentUser.id) || 
+    (comment.username === currentUser.username)
+  );
 
-  // Auto-expand if a new reply is added (simple check if replies length > 0 we could default to open, but that's messy)
-  // Instead, let's leave it as explicit user action to toggle, BUT if the user is writing a reply, we can auto-open it after submission?
-  // We'll leave it simple for now to avoid bugs.
-  
+  const timeAgo = (date: any) => {
+    if (!date) return '';
+    // Handle Firestore Timestamp or serialized object
+    const seconds = date.seconds ? date.seconds : (typeof date === 'object' && date.id ? Date.now()/1000 : 0); // Fallback
+    
+    // If it's the specific Date logic from before
+    if (date.id && date.en) return getLocalized(date, language);
+
+    // Calc from timestamp
+    const now = Math.floor(Date.now() / 1000);
+    const diff = now - seconds;
+    
+    if (diff < 60) return language === 'id' ? 'Baru saja' : 'Just now';
+    if (diff < 3600) return `${Math.floor(diff/60)} ${language === 'id' ? 'menit' : 'mins'}`;
+    if (diff < 86400) return `${Math.floor(diff/3600)} ${language === 'id' ? 'jam' : 'hours'}`;
+    return `${Math.floor(diff/86400)} ${language === 'id' ? 'hari' : 'days'}`;
+  };
+
   return (
     <div id={`comment-${comment.id}`} className={`group flex flex-col gap-6 animate-in fade-in duration-500 ${isReply ? 'ml-10 md:ml-16 mt-6 border-l-2 border-cogray-100 dark:border-cogray-800 pl-6' : ''}`}>
       <div className="scroll-mt-32 flex gap-6">
         <div className="shrink-0">
           <div className={`${isReply ? 'w-10 h-10' : 'w-14 h-14'} rounded-2xl bg-cogray-100 dark:bg-cogray-900 border border-cogray-200 dark:border-cogray-800 overflow-hidden flex items-center justify-center font-black ${isReply ? 'text-sm' : 'text-xl'} text-cogray-400 group-hover:border-conime-600/30 transition-all`}>
-            {comment.avatar.length > 2 ? (
+            {comment.avatar && comment.avatar.length > 2 ? (
               <img src={comment.avatar} alt={comment.user} className="w-full h-full object-cover" />
-            ) : comment.avatar}
+            ) : (comment.user ? comment.user.charAt(0) : 'U')}
           </div>
         </div>
         <div className="flex-grow">
@@ -60,7 +92,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <div className="flex items-center gap-3">
               <span className={`${isReply ? 'text-sm' : 'text-base'} font-black text-cogray-900 dark:text-white tracking-tight`}>{comment.user}</span>
               <div className="w-1 h-1 rounded-full bg-cogray-200 dark:bg-cogray-800"></div>
-              <span className="text-[10px] font-bold text-cogray-400 uppercase tracking-widest">{getLocalized(comment.date, language)}</span>
+              <span className="text-[10px] font-bold text-cogray-400 uppercase tracking-widest">{typeof comment.date === 'object' && comment.date.id ? getLocalized(comment.date, language) : timeAgo(comment.date)}</span>
             </div>
             <div className="relative">
               <button 
@@ -80,7 +112,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
                         const commentUrl = `${baseUrl}#comment-${comment.id}`;
                         navigator.clipboard.writeText(commentUrl);
                         setActiveMenu(null);
-                        // Optional: show a toast notification here
                       }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-left text-xs font-bold text-cogray-700 dark:text-cogray-300 hover:bg-cogray-50 dark:hover:bg-cogray-900 transition-colors border-b border-cogray-50 dark:border-cogray-900"
                     >
@@ -153,12 +184,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
       {/* Reply Input Area */}
       {replyingTo === comment.id && (
         <div className="ml-14 pl-6 border-l-2 border-cogray-100 dark:border-cogray-800 animate-in slide-in-from-top-2 duration-300">
-          <form onSubmit={handleReply} className="bg-cogray-50 dark:bg-cogray-900/50 p-4 rounded-2xl border border-cogray-100 dark:border-cogray-800 flex flex-col gap-4">
+          <form onSubmit={(e) => handleReply(e, comment.id)} className="bg-cogray-50 dark:bg-cogray-900/50 p-4 rounded-2xl border border-cogray-100 dark:border-cogray-800 flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-cogray-200 dark:border-cogray-800">
+              <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-cogray-200 dark:border-cogray-800 flex items-center justify-center bg-conime-600 text-white font-black text-[10px]">
                 {currentUser?.avatar ? (
                   <img src={currentUser.avatar} alt={currentUser.username} className="w-full h-full object-cover" />
-                ) : <div className="w-full h-full flex items-center justify-center bg-conime-600 text-white font-black text-[10px]">U</div>}
+                ) : 'U'}
               </div>
               <div className="flex-grow relative flex items-center">
                 <input 
@@ -231,118 +262,129 @@ const CommentItem: React.FC<CommentItemProps> = ({
 };
 
 interface CommentsSectionProps {
+  articleId?: string;
   language: 'id' | 'en';
   currentUser: any;
   onLoginClick: () => void;
 }
 
-const MOCK_COMMENTS: Comment[] = [
-  {
-    id: 'c1',
-    user: 'Kaito Shinpachi',
-    username: 'kaito_shinpachi',
-    avatar: 'K',
-    text: 'Visualnya gila banget sih kalau beneran digarap sama studio itu. Gak sabar nunggu rilis resminya!',
-    date: { id: '2 jam yang lalu', en: '2 hours ago' },
-    likes: 24,
-    replies: [
-      {
-        id: 'r1',
-        user: 'Nezuko Fan',
-        username: 'nezuko_fan',
-        avatar: 'N',
-        text: 'Setuju banget! Ufotable kayaknya bakal dapet.',
-        date: { id: '1 jam yang lalu', en: '1 hour ago' },
-        likes: 5
-      }
-    ]
-  },
-  {
-    id: 'c2',
-    user: 'Haruki Kun',
-    username: 'haruki_kun',
-    avatar: 'H',
-    text: 'Sakamoto Days akhirnya dapet adaptasi! Semoga koreografi aksinya tetep sekeren di manganya.',
-    date: { id: '5 jam yang lalu', en: '5 hours ago' },
-    likes: 12
-  }
-];
-
-const CommentsSection: React.FC<CommentsSectionProps> = ({ language, currentUser, onLoginClick }) => {
+const CommentsSection: React.FC<CommentsSectionProps> = ({ articleId, language, currentUser, onLoginClick }) => {
   const t = (TRANSLATIONS[language] as any);
   const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState<Comment[]>(MOCK_COMMENTS);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [visibleComments, setVisibleComments] = useState(5);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Subscribe to comments
+  useEffect(() => {
+    if (!articleId) return;
+
+    const q = query(
+      collection(db, 'comments'),
+      where('articleId', '==', articleId),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const allDocs = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data(),
+        date: doc.data().createdAt // Use createdAt for sorting/display
+      })) as any[];
+
+      // Reconstruct tree
+      const rootComments: Comment[] = [];
+      const replyMap: {[key: string]: Comment[]} = {};
+
+      // First pass: gather replies
+      allDocs.forEach(c => {
+        if (c.parentId) {
+          if (!replyMap[c.parentId]) replyMap[c.parentId] = [];
+          replyMap[c.parentId].push(c);
+        }
+      });
+
+      // Second pass: gather roots and attach replies
+      allDocs.forEach(c => {
+        if (!c.parentId) {
+          // Sort replies by time ascending usually, but here whatever
+          const replies = replyMap[c.id] ? replyMap[c.id].sort((a: any, b: any) => a.date?.seconds - b.date?.seconds) : [];
+          rootComments.push({ ...c, replies });
+        }
+      });
+
+      setComments(rootComments);
+    });
+
+    return () => unsubscribe();
+  }, [articleId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
+    if (!commentText.trim() || !currentUser) return;
 
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      user: currentUser?.displayName || currentUser?.username || 'User_CoNime',
-      username: currentUser?.username || 'user_conime',
-      avatar: currentUser?.avatar || 'U',
-      text: commentText,
-      date: { 
-        id: 'Baru saja', 
-        en: 'Just now' 
-      },
-      likes: 0
-    };
-
-    setComments([newComment, ...comments]);
-    setCommentText('');
+    try {
+      await addDoc(collection(db, 'comments'), {
+        articleId,
+        text: commentText,
+        userId: currentUser.id,
+        user: currentUser.displayName,
+        username: currentUser.username || 'user',
+        avatar: currentUser.avatar,
+        likes: 0,
+        createdAt: serverTimestamp(),
+      });
+      setCommentText('');
+    } catch (err) {
+      console.error("Error adding comment:", err);
+    }
   };
 
-  const handleReply = (e: React.FormEvent) => {
+  const handleReply = async (e: React.FormEvent, parentId: string) => {
     e.preventDefault();
-    if (!replyText.trim() || !replyingTo) return;
+    if (!replyText.trim() || !currentUser) return;
     
-    const newReply: Comment = {
-      id: Date.now().toString(),
-      user: currentUser?.displayName || currentUser?.username || 'User_CoNime',
-      username: currentUser?.username || 'user_conime',
-      avatar: currentUser?.avatar || 'U',
-      text: replyText,
-      date: { id: 'Baru saja', en: 'Just now' },
-      likes: 0
-    };
-
-    setComments(comments.map(c => {
-      if (c.id === replyingTo) {
-        return { ...c, replies: [newReply, ...(c.replies || [])] };
-      }
-      return c;
-    }));
-    
-    setReplyText('');
-    setReplyingTo(null);
+    try {
+      await addDoc(collection(db, 'comments'), {
+        articleId,
+        parentId,
+        text: replyText,
+        userId: currentUser.id,
+        user: currentUser.displayName,
+        username: currentUser.username || 'user',
+        avatar: currentUser.avatar,
+        likes: 0,
+        createdAt: serverTimestamp(),
+      });
+      
+      setReplyText('');
+      setReplyingTo(null);
+    } catch (err) {
+      console.error("Error adding reply:", err);
+    }
   };
 
-  const handleDelete = (commentId: string) => {
-    // Recursive delete function to find and remove from top-level or nested replies
-    const deleteRecursive = (list: Comment[]): Comment[] => {
-      return list
-        .filter(c => c.id !== commentId)
-        .map(c => ({
-          ...c,
-          replies: c.replies ? deleteRecursive(c.replies) : undefined
-        }));
-    };
-    
-    setComments(deleteRecursive(comments));
+  const handleDelete = async (commentId: string) => {
+    if (!window.confirm(language === 'id' ? 'Hapus komentar ini?' : 'Delete this comment?')) return;
+    try {
+      // NOTE: In a real app, we should also delete nested replies recursively or via Cloud Functions.
+      // For now, we only delete the document. Orphaned replies might stay or we hide them client side.
+      await deleteDoc(doc(db, 'comments', commentId));
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
   };
+
+  if (!articleId) return null;
 
   return (
     <section id="comments" className="mt-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex items-center gap-5 mb-10">
         <div className="w-1.5 h-10 bg-conime-600 rounded-full"></div>
         <h2 className="text-3xl font-black text-cogray-900 dark:text-white uppercase tracking-tighter">
-          {t.commentLabel} ({formatNumber(comments.length + 126)})
+          {t.commentLabel} ({formatNumber(comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0))})
         </h2>
       </div>
 
@@ -421,21 +463,9 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ language, currentUser
             setReplyingTo={setReplyingTo}
             replyText={replyText}
             setReplyText={setReplyText}
-            handleReply={(e) => {
-              handleReply(e);
-              // We rely on the parent updating the state, and potentially the child component re-rendering.
-              // Logic to auto-open relies on the fact that if a user just replied, they probably want to see it.
-              // However, since state is inside CommentItem, we might need a signal or just leave it manual for now
-              // to keep it simple, OR we can force it open if we uplift state. 
-              // A simpler UX: After replying, showing a "Reply sent" toast or just manual expand is acceptable.
-              // BUT, to make it "langsung terlihat", we ideally want it to expand.
-              // Let's stick to the core task first.
-            }}
+            handleReply={handleReply}
             handleDelete={handleDelete}
             t={t}
-            // Pass a prop to force open if needed, or just let user expand.
-            // For this iteration, we keep it simple as user asked "should it auto hide?".
-            // Defaulting to hidden is standard.
           />
         ))}
       </div>

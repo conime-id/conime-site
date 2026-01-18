@@ -14,7 +14,10 @@ import { CATEGORIES, SOCIAL_LINKS } from '../constants'; // Added for category m
 import { updateMetaTags, injectJSONLD, generateArticleSchema } from '../utils/seo';
 import { formatNumber } from '../utils/format';
 import CommentsSection from './CommentsSection';
+
 import ShareModal from './ShareModal';
+import { db } from '../lib/firebase';
+import { doc, updateDoc, increment, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 interface ArticleDetailProps {
   article: NewsItem;
@@ -154,6 +157,39 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const imageRef = useRef<HTMLImageElement>(null);
+  const viewIncremented = useRef(false);
+
+  // Sync Views and Likes from Firestore
+  useEffect(() => {
+    if (!article.id) return;
+
+    // 1. Increment View (Once per session/mount)
+    if (!viewIncremented.current) {
+        viewIncremented.current = true;
+        const articleRef = doc(db, 'articles', article.id);
+        
+        // Ensure doc exists then update, or create with 1 view
+        // Using set(merge) instead of get then update to be atomic-ish and simpler
+        setDoc(articleRef, { views: increment(1) }, { merge: true }).catch(err => {
+            console.error("Error updating views:", err);
+        });
+    }
+
+    // 2. Listen to real-time stats (likes, views)
+    const unsubscribe = onSnapshot(doc(db, 'articles', article.id), (doc) => {
+        if (doc.exists()) {
+            const data = doc.data();
+            if (data.likes !== undefined) setLikeCount(data.likes);
+            // We could also sync views back to UI, but article prop views might be static from build time.
+            // If we want real-time views in UI:
+            // if (data.views !== undefined) setArticleViews(data.views); 
+            // But we don't have local state for views (uses article.views prop). 
+            // We'll leave it simple for now. 
+        }
+    });
+
+    return () => unsubscribe();
+  }, [article.id]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -275,9 +311,30 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
   const point1 = Math.max(1, Math.floor(paragraphs.length * 0.4));
   const point2 = Math.max(2, Math.floor(paragraphs.length * 0.8));
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  const handleLike = async () => {
+    // Check if user is logged in
+    if (!currentUser) {
+      onLoginClick();
+      return;
+    }
+
+    // Optimistic update
+    const newLiked = !isLiked;
+    setIsLiked(newLiked);
+    setLikeCount(prev => newLiked ? prev + 1 : prev - 1);
+    
+    // Firestore update
+    try {
+        const articleRef = doc(db, 'articles', article.id);
+        await updateDoc(articleRef, {
+            likes: increment(newLiked ? 1 : -1)
+        });
+    } catch (err) {
+        console.error("Error updating like:", err);
+        // Revert on error
+        setIsLiked(!newLiked);
+        setLikeCount(prev => newLiked ? prev - 1 : prev + 1);
+    }
   };
 
   const handleNextImage = () => {
@@ -603,7 +660,7 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
           </div>
         </article>
 
-        <CommentsSection language={language} currentUser={currentUser} onLoginClick={onLoginClick} />
+        <CommentsSection articleId={article.id} language={language} currentUser={currentUser} onLoginClick={onLoginClick} />
         <div className="mt-20 mb-40">
           <h2 className="text-3xl font-black text-cogray-900 dark:text-white uppercase tracking-tighter mb-10">{t.relatedArticles}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">

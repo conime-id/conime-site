@@ -14,14 +14,25 @@ interface TrendingSectionProps {
 const TrendingSection: React.FC<TrendingSectionProps> = ({ language, onArticleClick, onCategoryClick, articles }) => {
   const t = TRANSLATIONS[language];
   
-  // Sort by views if possible, or just slice
-  const popularArticles = [...articles].sort((a,b) => (b.views||0) - (a.views||0)).slice(0, 4).map(item => ({
-    id: item.id,
-    title: getLocalized(item.title, language),
-    image: item.imageUrl,
-    categoryName: getLocalized(item.category, language),
-    categoryEn: typeof item.category === 'string' ? item.category : (item.category?.en || '')
-  }));
+  // Sort by views using local state if available (for real-time updates), otherwise fallback to article property
+  const getViews = (id: string) => {
+     // If parent passes viewCounts (which it doesn't yet, but will), use it.
+     // For now, let's rely on the passed articles which should eventually be sorted by parent or we accept they are static here until full refactor.
+     // To make this truly dynamic, we need to pass viewCounts here or fetch from firestore directly.
+     // Given the setup, let's stick to using the `articles` prop but re-sort it if the parent updates it.
+     return 0; 
+  };
+
+  const popularArticles = [...articles]
+    .sort((a,b) => (b.views||0) - (a.views||0))
+    .slice(0, 4)
+    .map(item => ({
+      id: item.id,
+      title: getLocalized(item.title, language),
+      image: item.imageUrl,
+      categoryName: getLocalized(item.category, language),
+      categoryEn: typeof item.category === 'string' ? item.category : (item.category?.en || '')
+    }));
 
   return (
     <section className="relative overflow-hidden group my-12 transition-all duration-300 rounded-[40px] p-8 md:p-12 border bg-gradient-to-br from-white to-cogray-50 dark:from-cogray-900 dark:to-cogray-950 border-cogray-200 dark:border-conime-500/10 shadow-xl dark:shadow-2xl">

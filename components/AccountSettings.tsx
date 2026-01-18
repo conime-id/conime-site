@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { TRANSLATIONS } from '../constants';
 import { useSearchParams } from 'react-router-dom';
-import { checkAvailability, updateSimulatedUser, deleteSimulatedUser } from '../utils/authValidation';
+import { db, auth } from '../lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { updateProfile } from 'firebase/auth';
+import { checkAvailability } from '../utils/authValidation'; // We keep checkAvailability mock for now or remove if we trust Firestore uniqueness (simpler: trust for now)
 import { X, User, Mail, Shield, Palette, Globe, Trash2, Save, Camera, Check, ChevronRight, Upload } from 'lucide-react';
 import { User as UserType } from '../types';
 
@@ -57,7 +60,7 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({
 
   const t = TRANSLATIONS[language];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -81,18 +84,29 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({
       avatarToSave = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.displayName)}&background=random&color=fff&size=200&bold=true&font-size=0.33`;
     }
 
-    // Update in simulated DB
-    updateSimulatedUser(user.username, { 
-      username: formData.username, 
-      email: formData.email,
-      avatar: avatarToSave,
-      displayName: formData.displayName,
-      bio: formData.bio
-    });
-
-    onSave({ ...user, ...formData, avatar: avatarToSave });
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
+    try {
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+          displayName: formData.displayName,
+          photoURL: avatarToSave
+        });
+        
+        await setDoc(doc(db, 'users', user.id), {
+          username: formData.username,
+          displayName: formData.displayName,
+          email: formData.email,
+          avatar: avatarToSave,
+          bio: formData.bio || ''
+        }, { merge: true });
+        
+        onSave({ ...user, ...formData, avatar: avatarToSave });
+        setIsSaved(true);
+        setTimeout(() => setIsSaved(false), 3000);
+      }
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      setError("Failed to update profile. Please try again.");
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +149,6 @@ export const AccountSettings: React.FC<AccountSettingsProps> = ({
                </button>
                <button 
                  onClick={() => {
-                   deleteSimulatedUser(user.username);
                    onDelete();
                  }}
                  className="py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/30 transition-all active:scale-95"

@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
 import { TRANSLATIONS } from '../constants';
-import { checkAvailability, saveSimulatedUser, findUser } from '../utils/authValidation';
-import { X, Mail, Lock, User, Github, MessageSquare, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { X, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { auth, googleProvider } from '../lib/firebase';
+import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -33,76 +34,109 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, language,
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const getFriendlyErrorMessage = (errorCode: string) => {
+    switch (errorCode) {
+      case 'auth/invalid-email':
+        return language === 'id' ? 'Format email tidak valid.' : 'Invalid email format.';
+      case 'auth/user-disabled':
+        return language === 'id' ? 'Pengguna ini telah dinonaktifkan.' : 'User disabled.';
+      case 'auth/user-not-found':
+        return language === 'id' ? 'Pengguna tidak ditemukan.' : 'User not found.';
+      case 'auth/wrong-password':
+        return language === 'id' ? 'Password salah.' : 'Wrong password.';
+      case 'auth/email-already-in-use':
+        return language === 'id' ? 'Email sudah digunakan.' : 'Email already in use.';
+      case 'auth/weak-password':
+        return language === 'id' ? 'Password terlalu lemah (min 6 karakter).' : 'Password too weak (min 6 chars).';
+      case 'auth/popup-closed-by-user':
+        return language === 'id' ? 'Login dibatalkan.' : 'Login cancelled.';
+      default:
+        return language === 'id' ? `Terjadi kesalahan: ${errorCode}` : `An error occurred: ${errorCode}`;
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      
+      const appUser = {
+        id: user.uid,
+        username: user.email?.split('@')[0] || 'user',
+        displayName: user.displayName || user.email?.split('@')[0],
+        email: user.email,
+        avatar: user.photoURL,
+        role: 'user',
+        bio: 'CoNime Reader'
+      };
+      
+      onLoginSuccess(appUser);
+      onClose();
+    } catch (err: any) {
+      console.error("Google Login Error:", err);
+      setError(getFriendlyErrorMessage(err.code));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
-    
-    // Generate valid username from display name
-    // 1. Lowercase
-    // 2. Replace non-alphanumeric with nothing (remove spaces/symbols)
-    // 3. Append random number for uniqueness
-    const generatedUsername = tab === 'register' 
-      ? username.toLowerCase().replace(/[^a-z0-9]/g, '') + Math.floor(Math.random() * 1000)
-      : username;
 
-    // Mock authentication delay
-    setTimeout(() => {
-      let finalUser;
-      
+    try {
       if (tab === 'register') {
-        const availability = checkAvailability(generatedUsername, email, language);
+        // REGISTER
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
         
-        if (!availability.valid) {
-          setError(availability.message || 'Error');
-          setIsLoading(false);
-          return;
-        }
-
-        const initials = username.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
-        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&color=fff&size=200&bold=true&font-size=0.33`;
-
-        finalUser = {
-          id: 'user_' + Date.now(),
-          username: generatedUsername,
+        // Update Profile with displayed name
+        await updateProfile(user, {
           displayName: username,
-          email: email.toLowerCase(),
-          avatar: avatarUrl,
+          photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&color=fff&size=200&bold=true&font-size=0.33`
+        });
+
+        const appUser = {
+          id: user.uid,
+          username: username.toLowerCase().replace(/[^a-z0-9]/g, ''),
+          displayName: username,
+          email: user.email,
+          avatar: user.photoURL,
           role: 'user',
-          bio: 'CoNime Enthusiast & Writer'
+          bio: 'CoNime Reader'
         };
 
-        // Save simulated user
-        saveSimulatedUser(finalUser);
-        onLoginSuccess(finalUser);
+        onLoginSuccess(appUser);
+
       } else {
-        // LOGIN LOGIC
-        // 1. Try to find user in permitted "DB"
-        const existingUser = findUser(email) || findUser(username);
+        // LOGIN
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-        if (existingUser) {
-          onLoginSuccess(existingUser);
-        } else {
-          setError(language === 'id' ? 'Akun tidak ditemukan atau password salah' : 'Account not found or invalid credentials');
-          setIsLoading(false);
-          return;
-        }
+        const appUser = {
+          id: user.uid,
+          username: user.displayName?.toLowerCase().replace(/[^a-z0-9]/g, '') || user.email?.split('@')[0],
+          displayName: user.displayName || user.email?.split('@')[0],
+          email: user.email,
+          avatar: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email || 'U')}&background=random&color=fff`,
+          role: 'user',
+          bio: 'CoNime Reader'
+        };
+
+        onLoginSuccess(appUser);
       }
-
-      setIsLoading(false);
+      
       onClose();
-    }, 1500);
-  };
-
-  const socialLogins = [
-    { 
-      icon: <GoogleIcon />, 
-      label: 'Google', 
-      providerColor: 'border-cogray-100 dark:border-cogray-800 hover:border-conime-600/30 hover:bg-cogray-50 dark:hover:bg-cogray-950',
-      textColor: 'text-cogray-700 dark:text-cogray-300'
+    } catch (err: any) {
+      console.error("Auth Error:", err);
+      setError(getFriendlyErrorMessage(err.code));
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-4 pt-16 md:pt-4">
@@ -137,7 +171,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, language,
           {/* Tabs */}
           <div className="flex bg-cogray-50 dark:bg-cogray-950 p-1 rounded-2xl mb-6">
             <button 
-              onClick={() => setTab('login')}
+              onClick={() => { setTab('login'); setError(null); }}
               className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
                 tab === 'login' 
                 ? 'bg-white dark:bg-cogray-800 text-conime-600 shadow-sm' 
@@ -147,7 +181,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, language,
               {t.login}
             </button>
             <button 
-              onClick={() => setTab('register')}
+              onClick={() => { setTab('register'); setError(null); }}
               className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
                 tab === 'register' 
                 ? 'bg-white dark:bg-cogray-800 text-conime-600 shadow-sm' 
@@ -184,7 +218,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, language,
             <div className="relative group">
               <Mail className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-cogray-400 group-focus-within:text-conime-600 transition-colors" />
               <input 
-                type={tab === 'login' ? "text" : "email"} 
+                type="email" 
                 required
                 placeholder={tab === 'login' ? t.loginIdentifierLabel : t.emailPlaceholder}
                 value={email}
@@ -240,17 +274,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, language,
             </div>
 
             <div className="flex justify-center">
-              {socialLogins.map((social) => (
-                <button 
-                  key={social.label}
-                  className={`w-full flex items-center justify-center gap-3 py-4 rounded-3xl border-2 transition-all active:scale-[0.98] ${social.providerColor}`}
-                >
-                  {social.icon}
-                  <span className={`font-black text-[11px] uppercase tracking-widest ${social.textColor}`}>
-                    {language === 'id' ? 'Lanjutkan dengan' : 'Continue with'} {social.label}
-                  </span>
-                </button>
-              ))}
+              <button 
+                onClick={handleGoogleLogin}
+                className="w-full flex items-center justify-center gap-3 py-4 rounded-3xl border-2 transition-all active:scale-[0.98] border-cogray-100 dark:border-cogray-800 hover:border-conime-600/30 hover:bg-cogray-50 dark:hover:bg-cogray-950"
+              >
+                <GoogleIcon />
+                <span className="font-black text-[11px] uppercase tracking-widest text-cogray-700 dark:text-cogray-300">
+                  {language === 'id' ? 'Lanjutkan dengan Google' : 'Continue with Google'}
+                </span>
+              </button>
             </div>
 
             <p className="mt-8 text-xs font-bold text-cogray-500 dark:text-cogray-400">
