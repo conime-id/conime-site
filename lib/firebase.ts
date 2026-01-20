@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getMessaging, isSupported } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD_8X5llOpk-oi6HvaW8S77N4a9jOLnsMg",
@@ -17,3 +18,17 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+
+// Initialize Messaging (Only in browser and if supported)
+export const messaging = async () => {
+    try {
+        const supported = await isSupported();
+        if (supported) {
+            return getMessaging(app);
+        }
+        return null;
+    } catch (e) {
+        console.error("Firebase Messaging not supported:", e);
+        return null; // Fallback
+    }
+};

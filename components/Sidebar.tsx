@@ -6,6 +6,8 @@ import { NewsItem } from '../types';
 import { getLocalized } from '../utils/localization';
 import { getArticleLink, getSectionLink } from '../utils/navigation';
 
+import AdUnit from './AdUnit';
+
 interface SidebarProps {
   language: 'id' | 'en';
   onArticleClick?: (id: string) => void;
@@ -109,6 +111,9 @@ const Sidebar: React.FC<SidebarProps> = ({ language, onArticleClick, onCategoryC
           )}
         </div>
       </SidebarSection>
+      
+      {/* Ad Spot 1: Sidebar Top (Below Recent Read) */}
+      <AdUnit language={language} slot="sidebar" />
 
       {/* 2. Popular Articles Widget */}
       <SidebarSection 

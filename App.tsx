@@ -18,6 +18,7 @@ import { useAuth } from "./hooks/useAuth";
 import { auth, db } from "./lib/firebase";
 import { signOut } from "firebase/auth";
 import { doc, setDoc, query, collection, onSnapshot } from "firebase/firestore";
+import { useNotifications } from "./hooks/useNotifications"; // Import Hook
 
 // Static Components (Wrapped for Routes)
 import AboutUs from "./components/AboutUs";
@@ -76,10 +77,11 @@ const App: React.FC = () => {
   });
 
   // Authentication State
-  // Authentication State
-  // Authentication State
   const { user: currentUser } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  
+  // Notification Hook (Auto-init)
+  const { permission, askPermission } = useNotifications();
 
   // Sync Cloud Data to Local State on Login
   useEffect(() => {
@@ -363,6 +365,8 @@ const App: React.FC = () => {
           onBookmarksClick={() => navigate("/?filter=bookmarks")}
           searchHistory={searchHistory}
           onClearSearchHistory={clearSearchHistory}
+          notificationPermission={permission} 
+          onEnableNotifications={askPermission}
         />
 
         <AuthModal 

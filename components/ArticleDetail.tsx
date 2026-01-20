@@ -14,6 +14,7 @@ import { CATEGORIES, SOCIAL_LINKS } from '../constants'; // Added for category m
 import { updateMetaTags, injectJSONLD, generateArticleSchema } from '../utils/seo';
 import { formatNumber } from '../utils/format';
 import CommentsSection from './CommentsSection';
+import AdUnit from './AdUnit';
 
 import ShareModal from './ShareModal';
 import { db } from '../lib/firebase';
@@ -496,6 +497,9 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
             )}
           </div>
 
+          {/* Ad Slot: Below Header */}
+          <AdUnit language={language} slot="in-article" className="mb-10" />
+
           <div className="article-content max-w-none text-left" ref={articleContentRef}>
             <div className="text-cogray-800 dark:text-cogray-300 leading-[1.8] space-y-8 font-medium">
               {paragraphs.map((paragraph, i) => {
@@ -508,7 +512,13 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({
                 return (
                   <React.Fragment key={i}>
                     <div className="text-lg md:text-xl" dangerouslySetInnerHTML={{ __html: renderMarkdown(trimmed) }} />
-                    {i === point1 && inlineRec1 && <RelatedInline item={inlineRec1} title={t.readAlso} />}
+                    {i === point1 && (
+                        <>
+                            {inlineRec1 && <RelatedInline item={inlineRec1} title={t.readAlso} />}
+                            {/* Ad Slot: Middle Content 1 */}
+                            <AdUnit language={language} slot="in-article" className="my-8" />
+                        </>
+                    )}
                     {i === point2 && inlineRec2 && <RelatedInline item={inlineRec2} title={t.readAlso} />}
                   </React.Fragment>
                 );

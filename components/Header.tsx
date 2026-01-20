@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Moon, Sun, Bell, Menu, X, Globe, Search, LogOut, Settings, User as UserIcon, ChevronDown, Bookmark, History, Instagram, Facebook, Twitter, Youtube, Mail, Phone, ArrowUp } from 'lucide-react';
+import { Search, Menu, X, Sun, Moon, Globe, LogIn, User as UserIcon, Settings, LogOut, Bookmark, History, Trash2, Bell, ChevronDown, Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 import { LOGO_SVG, LOGO_MARK_SVG, TRANSLATIONS, SOCIAL_LINKS, TIKTOK_ICON_SVG, DEFAULT_AVATAR } from '../constants';
 import { Link, NavLink, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { getSectionLink } from '../utils/navigation';
@@ -22,6 +23,8 @@ interface HeaderProps {
   searchHistory: string[];
   onClearSearchHistory: () => void;
   onSearchSubmit: (q: string) => void;
+  notificationPermission?: NotificationPermission;
+  onEnableNotifications?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -41,12 +44,15 @@ export const Header: React.FC<HeaderProps> = ({
   searchHistory,
   onClearSearchHistory,
   onSearchSubmit,
-  searchQuery = ""
+  searchQuery = "",
+  notificationPermission,
+  onEnableNotifications
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   
@@ -279,8 +285,88 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 </button>
-              </div>
-              
+
+                {/* Notification Bell (Always Show) */}
+                <div className="relative">
+                  <button 
+                    onClick={() => {
+                      if (notificationPermission === 'default' && onEnableNotifications) {
+                        onEnableNotifications();
+                      } else {
+                        setIsNotificationOpen(!isNotificationOpen);
+                        setIsProfileOpen(false); // Close other dropdowns
+                      }
+                    }}
+                    className={`p-2 rounded-full transition-all relative group ${isNotificationOpen ? 'bg-conime-100 dark:bg-conime-900/20 text-conime-600' : 'text-cogray-500 hover:bg-cogray-100 dark:hover:bg-cogray-800'}`}
+                    title={language === 'id' ? "Notifikasi" : "Notifications"}
+                  >
+                    {notificationPermission === 'default' && (
+                        <div className="absolute top-2 right-2.5 w-2 h-2 bg-conime-500 rounded-full animate-pulse ring-2 ring-white dark:ring-cogray-950"></div>
+                    )}
+                    <Bell className="w-5 h-5 md:w-6 md:h-6" />
+                  </button>
+
+                  {/* Notification Dropdown */}
+                  {isNotificationOpen && (
+                    <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-cogray-950 border border-cogray-100 dark:border-cogray-800 rounded-[32px] shadow-2xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                        <div className="px-6 py-4 border-b border-cogray-100 dark:border-cogray-900 flex items-center justify-between bg-cogray-50/50 dark:bg-cogray-900/30">
+                            <span className="text-[10px] font-black text-cogray-400 uppercase tracking-[0.2em]">{language === 'id' ? 'NOTIFIKASI' : 'NOTIFICATIONS'}</span>
+                            {notificationPermission === 'granted' && (
+                                <span className="text-[9px] font-bold text-conime-600 bg-conime-50 dark:bg-conime-900/30 px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+                            )}
+                        </div>
+                        
+                        <div className="max-h-[300px] overflow-y-auto custom-scrollbar p-2">
+                             {/* Permission Request State */}
+                             {notificationPermission === 'default' && (
+                                 <div className="p-4 text-center">
+                                     <div className="w-12 h-12 bg-conime-100 dark:bg-conime-900/30 rounded-full flex items-center justify-center text-conime-600 mx-auto mb-3">
+                                         <Bell className="w-6 h-6" />
+                                     </div>
+                                     <h4 className="text-sm font-black text-cogray-900 dark:text-white uppercase tracking-tight mb-1">
+                                         {language === 'id' ? 'Aktifkan Notifikasi' : 'Enable Notifications'}
+                                     </h4>
+                                     <p className="text-xs text-cogray-500 dark:text-cogray-400 mb-4 leading-relaxed">
+                                         {language === 'id' ? 'Dapatkan update berita anime terbaru langsung di perangkatmu.' : 'Get the latest anime news updates directly on your device.'}
+                                     </p>
+                                     <button 
+                                        onClick={() => { onEnableNotifications?.(); setIsNotificationOpen(false); }}
+                                        className="w-full py-2 bg-conime-600 hover:bg-conime-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-conime-600/20"
+                                     >
+                                         {language === 'id' ? 'IZINKAN' : 'ALLOW'}
+                                     </button>
+                                 </div>
+                             )}
+
+                             {/* Denied State */}
+                             {notificationPermission === 'denied' && (
+                                 <div className="p-4 text-center">
+                                     <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 mx-auto mb-3">
+                                         <Bell className="w-6 h-6" />
+                                     </div>
+                                     <p className="text-xs font-bold text-cogray-600 dark:text-cogray-300 leading-relaxed">
+                                         {language === 'id' ? 'Notifikasi diblokir browser. Silakan aktifkan manual di pengaturan situs.' : 'Notifications are blocked by browser. Please enable manually in site settings.'}
+                                     </p>
+                                 </div>
+                             )}
+
+                             {/* Empty/List State for Granted */}
+                             {notificationPermission === 'granted' && (
+                                 <div className="flex flex-col items-center justify-center py-8 opacity-50">
+                                     <div className="w-16 h-16 bg-cogray-50 dark:bg-cogray-900 rounded-full flex items-center justify-center text-cogray-300 dark:text-cogray-600 mb-2">
+                                         <Bell className="w-8 h-8" />
+                                     </div>
+                                     <p className="text-[10px] font-bold text-cogray-400 uppercase tracking-widest">
+                                         {language === 'id' ? 'Tidak ada notifikasi baru' : 'No new notifications'}
+                                     </p>
+                                 </div>
+                             )}
+                        </div>
+                    </div>
+                  )}
+                </div>
+
+              {/* User Avatar Logic */}
               {currentUser ? (
                 <div className="relative ml-1" ref={profileRef}>
                   <button 
@@ -365,6 +451,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
         </div>
+      </div>
 
         <div className={`lg:hidden absolute top-full left-0 right-0 bg-white dark:bg-cogray-950 border-t border-cogray-100 dark:border-cogray-900 px-4 py-3 shadow-xl transition-all duration-300 transform ${isSearchOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0 pointer-events-none'}`}>
           <form onSubmit={handleSearchSubmit} className="relative flex items-center">

@@ -9,6 +9,7 @@ import { TRANSLATIONS } from "../constants";
 import { NewsItem } from "../types";
 import { getLocalized } from "../utils/localization";
 import { getArticleLink, getSectionLink } from "../utils/navigation";
+import AdUnit from "../components/AdUnit";
 import { 
   ChevronDown, 
   Search, 
@@ -20,9 +21,9 @@ import {
   ArrowRight,
   TrendingUp,
   FileX,
-  LayoutGrid, // Restored
-  List,       // Restored
-  ArrowDown   // Restored
+  LayoutGrid, 
+  List,       
+  ArrowDown   
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -519,16 +520,23 @@ export const HomePage: React.FC<HomePageProps> = ({
                       : "grid-cols-1"
                   }`}
                 >
-                  {visibleNews.map((item) => (
-                    <NewsCard
-                      key={item.id}
-                      item={item}
-                      language={language}
-                      onClick={() => handleArticleClick(item.id)}
-                      onCategoryClick={(cat) => handleCategoryNavigation(cat)} 
-                      isBookmarked={bookmarks.includes(item.id)}
-                      onToggleBookmark={(e) => toggleBookmark(item.id, e)}
-                    />
+                  {visibleNews.map((item, index) => (
+                    <React.Fragment key={item.id}>
+                        <NewsCard
+                          item={item}
+                          language={language}
+                          onClick={() => handleArticleClick(item.id)}
+                          onCategoryClick={(cat) => handleCategoryNavigation(cat)} 
+                          isBookmarked={bookmarks.includes(item.id)}
+                          onToggleBookmark={(e) => toggleBookmark(item.id, e)}
+                        />
+                         {/* Ad Slot: Every 4 items (In-Feed) */}
+                         {(index + 1) % 4 === 0 && (
+                            <div className={viewType === "grid" ? "col-span-1 md:col-span-2" : "col-span-1"}>
+                                <AdUnit language={language} slot="in-feed" />
+                            </div>
+                        )}
+                    </React.Fragment>
                   ))}
                 </div>
 
